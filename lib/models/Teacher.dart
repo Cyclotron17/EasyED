@@ -60,6 +60,8 @@ class Teacher {
         "students": List<dynamic>.from(students.map((x) => x)),
         "__v": v,
       };
+
+  toMap() {}
 }
 
 class Common {
