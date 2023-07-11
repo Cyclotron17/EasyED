@@ -20,28 +20,32 @@ Future<Teacher> submitdata({
   // required DateTime updatedOn,
   required String id,
 }) async {
-  String jsonpayload = teacherToJson(teacherdata);
+  List<Common> commonlist = <Common>[
+    Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+  ];
+  // String jsonpayload = teacherToJson(teacherdata);
 
   // print(jsonpayload);
   // print(Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
   //     .toJson()
   //     .toString());
 
-  print(
-    {
-      "_id": id,
-      "common": json.encode([
-        Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
-            .toJson()
-
-        // "createdOn": "2022-01-01T09:00:00.000Z",
-        // "updatedOn": "2022-01-01T09:00:00.000Z"
-      ])
-    },
-  );
+//   print(
+//     {
+//       "_id": id,
+//       "common":
+// json.encode([
+//         Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+//             .toJson()
+//         // "createdOn": "2022-01-01T09:00:00.000Z",
+//         // "updatedOn": "2022-01-01T09:00:00.000Z"
+//       ] )
+//     },
+//   );
 
   var response = await http.post(
-    Uri.https('easyed-backend.onrender.com', '/api/teacher'),
+    Uri.parse('easyed-backend.onrender.com/api/teacher'),
+    headers: {'Content-Type': 'application/json'},
     body: {
       "_id": id,
       "common": json.encode([

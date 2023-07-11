@@ -194,9 +194,9 @@ class _ChapterScreenState extends State<ChapterScreen> {
     return GestureDetector(
       onTap: () {
         print(index);
-        if (index == 0) {}
+        // if (index == 0) {}
 
-        if (index == 1) {
+        if (index == 0) {
           PersistentNavBarNavigator.pushNewScreen(
             context,
             screen: NotesScreen(),
