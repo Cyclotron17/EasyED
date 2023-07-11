@@ -44,8 +44,7 @@ Future<Teacher> submitdata({
 //   );
 
   var response = await http.post(
-    Uri.parse('easyed-backend.onrender.com/api/teacher'),
-    headers: {'Content-Type': 'application/json'},
+    Uri.https('easyed-backend.onrender.com', '/api/teacher'),
     body: {
       "_id": id,
       "common": json.encode([
