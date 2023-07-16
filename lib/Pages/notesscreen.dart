@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/models/Teacher.dart';
@@ -18,7 +19,21 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  List<Note> noteslist = [];
+
+  Note notesdata = Note(
+      creator: "",
+      noteClass: "",
+      subject: "",
+      topic: "",
+      noteHash: "",
+      isFree: true,
+      price: "",
+      notesPdfLink: "",
+      id: "");
 
   List<Notesbox> subjectBoxlist = [
     Notesbox(
@@ -38,17 +53,17 @@ class _NotesScreenState extends State<NotesScreen> {
     ),
   ];
 
-  List<Teacher> teacherslist = [];
-  Teacher sampleteachers = Teacher(
-      id: 'id',
-      commons: [],
-      userDetails: [],
-      educationalDetails: [],
-      tasks: [],
-      notes: [],
-      videoLecture: [],
-      students: [],
-      v: 1);
+  // List<Teacher> teacherslist = [];
+  // Teacher sampleteachers = Teacher(
+  //     id: 'id',
+  //     commons: [],
+  //     userDetails: [],
+  //     educationalDetails: [],
+  //     tasks: [],
+  //     notes: [],
+  //     videoLecture: [],
+  //     students: [],
+  //     v: 1);
 
   void handleClick(String value) {
     switch (value) {
@@ -178,11 +193,11 @@ class _NotesScreenState extends State<NotesScreen> {
                 height: deviceheight * 0.5,
                 width: devicewidth * 0.78,
                 child: FutureBuilder(
-                    future: getTeacherdata(),
+                    future: getnotesdata(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return ListView.builder(
-                          itemCount: teacherslist.length,
+                          itemCount: noteslist.length,
                           itemBuilder: (context, index) {
                             return buildlistitem(context, index);
                           },
@@ -206,7 +221,7 @@ class _NotesScreenState extends State<NotesScreen> {
 
     double devicewidth = MediaQuery.of(context).size.width;
     Notesbox subjectwidget = subjectBoxlist[index];
-    Teacher teacherdata = teacherslist[index];
+    Note notedata = noteslist[index];
     return GestureDetector(
       onTap: () {
         print(index);
@@ -216,7 +231,7 @@ class _NotesScreenState extends State<NotesScreen> {
         padding: const EdgeInsets.only(top: 13, bottom: 13),
         child: GestureDetector(
           onTap: () async {
-            final url = teacherdata.notes[index].notesPdfLink;
+            final String url = notedata.notesPdfLink;
             final file = await PDFApi.loadNetwork(url);
 
             openPDF(context, file);
@@ -268,7 +283,7 @@ class _NotesScreenState extends State<NotesScreen> {
                           Container(
                             width: 140,
                             child: Text(
-                              teacherdata.notes[index].topic,
+                              notedata.topic,
                               style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w400,
@@ -296,28 +311,51 @@ class _NotesScreenState extends State<NotesScreen> {
     );
   }
 
-  Future<Teacher> getTeacherdata() async {
+  Future<List<Note>> getnotesdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+        'https://easyed-backend.onrender.com/api/teacher/$uid/notes'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
 
     if (response.statusCode == 200) {
-      sampleteachers = Teacher.fromJson(data);
-      // sampleteachers. = dat;
-
-      teacherslist.add(sampleteachers);
+      for (Map<String, dynamic> index in data) {
+        noteslist.add(Note.fromJson(index));
+      }
+      // teacherslist.add(sampleteachers);
 
       // print(sampleteachers.toString());
       // for (Map<String, dynamic> index in data) {
       //   sampleteachers.add(Teacher.fromJson(index));
       // }
-      return sampleteachers;
+      return noteslist;
     } else {
-      return sampleteachers;
+      return noteslist;
     }
   }
+
+  // Future<Teacher> getTeacherdata() async {
+  //   final response = await http.get(Uri.parse(
+  //       'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+  //   var data = jsonDecode(response.body.toString());
+
+  //   // print(data.toString());
+
+  //   if (response.statusCode == 200) {
+  //     sampleteachers = Teacher.fromJson(data);
+  //     // sampleteachers. = dat;
+
+  //     teacherslist.add(sampleteachers);
+
+  //     // print(sampleteachers.toString());
+  //     // for (Map<String, dynamic> index in data) {
+  //     //   sampleteachers.add(Teacher.fromJson(index));
+  //     // }
+  //     return sampleteachers;
+  //   } else {
+  //     return sampleteachers;
+  //   }
+  // }
 
   void openPDF(BuildContext context, File file) {
     nextScreen(

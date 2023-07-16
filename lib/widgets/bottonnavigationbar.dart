@@ -22,7 +22,7 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
   List<Widget> _NavScreens() {
     return [
       Dashboard(),
-      Page1(),
+      // Page1(),
       NOtificationScreen(),
       Page3(),
       Page4(),
@@ -37,12 +37,12 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
         activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
         inactiveColorPrimary: Colors.black,
       ),
-      PersistentBottomNavBarItem(
-        icon: ImageIcon(AssetImage("assets/home.png")),
-        // title: ("Home"),
-        activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
-        inactiveColorPrimary: Colors.black,
-      ),
+      // PersistentBottomNavBarItem(
+      //   icon: ImageIcon(AssetImage("assets/home.png")),
+      //   // title: ("Home"),
+      //   activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
+      //   inactiveColorPrimary: Colors.black,
+      // ),
       PersistentBottomNavBarItem(
         icon: ImageIcon(AssetImage("assets/bell.png")),
         // title: ("OFFERS"),

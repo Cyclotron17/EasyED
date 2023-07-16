@@ -4,8 +4,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sapp/Pages/LecturePage.dart';
 import 'package:sapp/Pages/chapterscreen.dart';
 import 'package:sapp/Pages/lecturesscreen.dart';
+import 'package:sapp/Pages/pdfPage.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/Pages/taskscreen.dart';
 import 'package:sapp/pdf_api.dart';
@@ -245,7 +247,7 @@ class _DashboardState extends State<Dashboard> {
                   onTap: () {
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: ChapterScreen(),
+                      screen: PdfPage(),
                       withNavBar: true,
                       pageTransitionAnimation:
                           PageTransitionAnimation.cupertino,
@@ -289,7 +291,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    nextScreen(context, LecturesScreen());
+                    nextScreen(context, LecturePage());
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),

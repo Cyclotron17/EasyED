@@ -38,46 +38,46 @@ class _TestPageState extends State<TestPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
-              height: 300,
-              child: FutureBuilder(
-                  future: getStudentdata(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                          itemCount: 1,
-                          itemBuilder: (context, index) {
-                            return Container(
-                              width: 300,
-                              color: Colors.yellow,
-                              height: 150,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("Student Json"),
-                                  // SizedBox(
-                                  //   height: 40,
-                                  // ),
-                                  Text("IN USER DETAILS :"),
-                                  Text(
-                                      "first Name : ${samplestudents[index].userDetails[index].firstName}"),
+            // Container(
+            //   height: 300,
+            //   child: FutureBuilder(
+            //       future: getStudentdata(),
+            //       builder: (context, snapshot) {
+            //         if (snapshot.hasData) {
+            //           return ListView.builder(
+            //               itemCount: 1,
+            //               itemBuilder: (context, index) {
+            //                 return Container(
+            //                   width: 300,
+            //                   color: Colors.yellow,
+            //                   height: 150,
+            //                   child: Column(
+            //                     crossAxisAlignment: CrossAxisAlignment.start,
+            //                     children: [
+            //                       Text("Student Json"),
+            //                       // SizedBox(
+            //                       //   height: 40,
+            //                       // ),
+            //                       Text("IN USER DETAILS :"),
+            //                       Text(
+            //                           "first Name : ${samplestudents[index].userDetails[index].firstName}"),
 
-                                  Text(
-                                      "avatar url : ${samplestudents[index].userDetails[index].avatar}"),
-                                  SizedBox(
-                                    height: 40,
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
-                    } else {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                  }),
-            ),
+            //                       Text(
+            //                           "avatar url : ${samplestudents[index].userDetails[index].avatar}"),
+            //                       SizedBox(
+            //                         height: 40,
+            //                       ),
+            //                     ],
+            //                   ),
+            //                 );
+            //               });
+            //         } else {
+            //           return Center(
+            //             child: CircularProgressIndicator(),
+            //           );
+            //         }
+            //       }),
+            // ),
             Container(
               height: 600,
               child: FutureBuilder(

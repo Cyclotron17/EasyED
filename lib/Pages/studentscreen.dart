@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
@@ -53,7 +54,7 @@ class _Page1State extends State<Page1> {
     double appbarheight = 45;
 
     double devicewidth = MediaQuery.of(context).size.width;
-
+    final uid = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       key: _scaffoldKey,
       drawer: MyDrawer(),
@@ -179,7 +180,8 @@ class _Page1State extends State<Page1> {
                             hintText: "search here",
                             fillColor: Color.fromRGBO(38, 90, 232, 1)),
                       ),
-                    )
+                    ),
+                    Text(uid),
                   ],
                 ),
               ),

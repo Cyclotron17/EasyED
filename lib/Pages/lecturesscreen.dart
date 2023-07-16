@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sapp/Pages/addVideoScreen.dart';
 import 'package:sapp/Pages/videoplayerscreen.dart';
 import 'package:sapp/models/Teacher.dart';
 import 'package:http/http.dart' as http;
@@ -17,7 +19,13 @@ class LecturesScreen extends StatefulWidget {
 }
 
 class _LecturesScreenState extends State<LecturesScreen> {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  List<VideoLecture> lectureslist = [];
+
+  VideoLecture videoslecture = VideoLecture(
+      subject: '', topic: '', videoLink: '', videoTitle: '', id: '');
 
   List<videoBoxlist> subjectBoxlist = [
     videoBoxlist(
@@ -82,12 +90,19 @@ class _LecturesScreenState extends State<LecturesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(uid);
     double deviceheight = MediaQuery.of(context).size.height;
     double appbarheight = 45;
 
     double devicewidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(Icons.add),
+      //   onPressed: () {
+      //     nextScreen(context, AddVideoScreen());
+      //   },
+      // ),
       key: _scaffoldKey,
       drawer: MyDrawer(),
       body: SafeArea(
@@ -183,11 +198,11 @@ class _LecturesScreenState extends State<LecturesScreen> {
                 height: deviceheight * 0.59,
                 width: devicewidth * 0.95,
                 child: FutureBuilder(
-                    future: getTeacherdata(),
+                    future: getlecturesdata(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return ListView.builder(
-                          itemCount: 1,
+                          itemCount: lectureslist.length,
                           itemBuilder: (context, index) {
                             return buildlistitem(context, index);
                           },
@@ -211,14 +226,14 @@ class _LecturesScreenState extends State<LecturesScreen> {
 
     double devicewidth = MediaQuery.of(context).size.width;
     videoBoxlist subjectwidget = subjectBoxlist[index];
-    Teacher teacherdata = teacherslist[index];
+    VideoLecture lecturedata = lectureslist[index];
 
     return GestureDetector(
       onTap: () {
         // print(index);
         // if (index == 0) {}
 
-        final String videourl = teacherdata.videoLecture[index].videoLink;
+        final String videourl = lecturedata.videoLink;
         nextScreen(context, VideoPlayerScreen(videourl: videourl));
       },
       child: Padding(
@@ -326,24 +341,16 @@ class _LecturesScreenState extends State<LecturesScreen> {
     );
   }
 
-  Future<Teacher> getTeacherdata() async {
+  Future<List<VideoLecture>> getlecturesdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+        'https://easyed-backend.onrender.com/api/teacher/$uid/lectures'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
 
     if (response.statusCode == 200) {
-      sampleteachers = Teacher.fromJson(data);
-      // sampleteachers. = dat;
-      int check = 0;
-
-      if (teacherslist.contains(sampleteachers)) {
-        check = 1;
-      }
-
-      if (check == 0) {
-        teacherslist.add(sampleteachers);
+      for (Map<String, dynamic> index in data) {
+        lectureslist.add(VideoLecture.fromJson(index));
       }
       // teacherslist.add(sampleteachers);
 
@@ -351,9 +358,9 @@ class _LecturesScreenState extends State<LecturesScreen> {
       // for (Map<String, dynamic> index in data) {
       //   sampleteachers.add(Teacher.fromJson(index));
       // }
-      return sampleteachers;
+      return lectureslist;
     } else {
-      return sampleteachers;
+      return lectureslist;
     }
   }
 }

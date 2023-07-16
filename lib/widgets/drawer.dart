@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/editprofilesecreen.dart';
+import 'package:sapp/auth/login_page.dart';
+import 'package:sapp/auth/register_page.dart';
+import 'package:sapp/service/auth_service.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -11,6 +14,7 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
+    AuthService authService = AuthService();
     return Drawer(
       child: Container(
         color: Color.fromRGBO(38, 90, 232, 1),
@@ -162,7 +166,13 @@ class _MyDrawerState extends State<MyDrawer> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () async {},
+                            onPressed: () async {
+                              await authService.signOut();
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()),
+                                  (route) => false);
+                            },
                             icon: const Icon(
                               Icons.done,
                               color: Colors.green,
