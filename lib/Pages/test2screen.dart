@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sapp/Pages/studentscreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/helper/helper_function.dart';
@@ -13,6 +15,9 @@ import 'package:http/http.dart' as http;
 import 'package:sapp/models/Teacher.dart';
 import 'package:sapp/service/auth_service.dart';
 import 'package:sapp/widgets/widgets.dart';
+import 'package:intl/intl.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:random_string/random_string.dart';
 
 class test2screen extends StatefulWidget {
   const test2screen({super.key});
@@ -71,6 +76,70 @@ Future<Teacher> submitdata({
 }
 
 class _test2screenState extends State<test2screen> {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  File? selectedImage;
+
+  String? avatarurl;
+
+  void showSnackBar({required BuildContext context, required String content}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(content),
+      ),
+    );
+  }
+
+  Future<File?> pickImageFromGallery(BuildContext context) async {
+    File? image;
+    try {
+      // final pickedImage =
+      //     await ImagePicker().pickImage(source: ImageSource.gallery);
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.gallery);
+
+      if (pickedImage != null) {
+        image = File(pickedImage.path);
+      }
+    } catch (e) {
+      showSnackBar(context: context, content: e.toString());
+    }
+    return image;
+  }
+
+  Future getImage() async {
+    var image = await pickImageFromGallery(context);
+
+    setState(() {
+      selectedImage = image;
+    });
+
+    print(selectedImage);
+  }
+
+  Future uploadavatar() async {
+    if (selectedImage != null) {
+      setState(() {});
+
+      // DateTime now = DateTime.now();
+      // String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+      /// upload image to firebase storage
+      Reference firebaseStorageRef = FirebaseStorage.instance
+          .ref()
+          .child("UserAvatarImages")
+          .child(uid)
+          .child("${randomAlphaNumeric(9)}.jpg");
+
+      ///create a task to upload this data to our storage
+      final UploadTask task = firebaseStorageRef.putFile(selectedImage!);
+
+      var downoadUrl = await (await task).ref.getDownloadURL();
+      print("this is url $downoadUrl");
+
+      avatarurl = downoadUrl;
+    } else {}
+  }
+
   Teacher teacherdata = Teacher(
       id: "",
       commons: [],
@@ -199,6 +268,17 @@ class _test2screenState extends State<test2screen> {
                 SizedBox(
                   height: 20,
                 ),
+
+                ElevatedButton(
+                    onPressed: () {
+                      getImage();
+                    },
+                    child: Text("get image")),
+                ElevatedButton(
+                    onPressed: () {
+                      uploadavatar();
+                    },
+                    child: Text("upload image")),
                 // TextField(
                 //   controller: jobcontroller,
                 //   decoration: InputDecoration(
@@ -234,7 +314,7 @@ class _test2screenState extends State<test2screen> {
                                 lastName: lastname,
                                 email: email,
                                 mobile: mobile,
-                                avatar: "",
+                                avatar: avatarurl!,
                                 id: "649ebfb5b4a2118b5424694e")
                           ],
                           educationalDetails: [

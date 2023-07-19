@@ -4,6 +4,7 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/dashboardscreen.dart';
 
 import 'package:sapp/Pages/notificationscreen.dart';
+import 'package:sapp/Pages/showprofilescreen.dart';
 
 import 'package:sapp/Pages/studentscreen.dart';
 
@@ -25,7 +26,8 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
       // Page1(),
       NOtificationScreen(),
       Page3(),
-      Page4(),
+      // Page4(),
+      ShowProfileScreen(),
     ];
   }
 

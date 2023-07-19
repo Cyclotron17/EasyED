@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/editprofilesecreen.dart';
+import 'package:sapp/Pages/postsScreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/auth/register_page.dart';
 import 'package:sapp/service/auth_service.dart';
+import 'package:sapp/widgets/widgets.dart';
 
 class MyDrawer extends StatefulWidget {
   @override
@@ -140,6 +142,20 @@ class _MyDrawerState extends State<MyDrawer> {
               leading: Icon(CupertinoIcons.settings_solid, color: Colors.white),
               title: Text(
                 "Language",
+                style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            ListTile(
+              onTap: () {
+                nextScreen(context, PostsScreen());
+              },
+              leading:
+                  Icon(CupertinoIcons.photo_camera_solid, color: Colors.white),
+              title: Text(
+                "Posts Screen",
                 style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontSize: 15,

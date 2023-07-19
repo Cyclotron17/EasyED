@@ -4,7 +4,14 @@ import 'package:sapp/Pages/addpdfscreen.dart';
 import 'package:sapp/Pages/dashboardscreen.dart';
 import 'package:sapp/Pages/lecturesscreen.dart';
 import 'package:sapp/Pages/notesscreen.dart';
+import 'package:sapp/Pages/pdfPage.dart';
+import 'package:sapp/Pages/postsScreen.dart';
 import 'package:sapp/Pages/quizpage.dart';
+import 'package:sapp/Pages/showpostscreen.dart';
+import 'package:sapp/Pages/showprofilescreen.dart';
+import 'package:sapp/Pages/showquestions.dart';
+import 'package:sapp/Pages/showtaskpage.dart';
+import 'package:sapp/Pages/signin.dart';
 
 import 'package:sapp/Pages/studentscreen.dart';
 import 'package:sapp/Pages/taskpostscreen.dart';
@@ -106,12 +113,13 @@ class _MyAppState extends State<MyApp> {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               useMaterial3: true,
             ),
-            // home: LecturesScreen(),
-            home: _isSignedIn
-                ? isshow
-                    ? StudentScreen()
-                    : test2screen()
-                : LoginPage(),
+            // home: ShowPostScreen(),
+            home: LoginPage(),
+            // home: _isSignedIn
+            //     ? isshow
+            //         ? StudentScreen()
+            //         : test2screen()
+            //     : LoginPage(),
           );
         });
   }

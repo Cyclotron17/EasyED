@@ -212,7 +212,8 @@ class _TaskScreenState extends State<TaskScreen> {
         if (index == 1) {
           PersistentNavBarNavigator.pushNewScreen(
             context,
-            screen: QuizPage(),
+            // screen: QuizPage(),
+            screen: ShowTaskPage(),
             withNavBar: true,
             pageTransitionAnimation: PageTransitionAnimation.cupertino,
           );

@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sapp/Pages/pdfviewerpage.dart';
-import 'package:sapp/Pages/showquestions.dart';
 import 'package:sapp/Quiz/home.dart';
 import 'package:sapp/models/Student.dart';
 import 'package:sapp/models/Teacher.dart';
@@ -13,14 +12,15 @@ import 'package:sapp/pdf_api.dart';
 import 'package:sapp/video_player_item.dart';
 import 'package:sapp/widgets/widgets.dart';
 
-class ShowTaskPage extends StatefulWidget {
-  const ShowTaskPage({super.key});
+class ShowQuestions extends StatefulWidget {
+  final String taskid;
+  const ShowQuestions({super.key, required this.taskid});
 
   @override
-  State<ShowTaskPage> createState() => _ShowTaskPageState();
+  State<ShowQuestions> createState() => _ShowQuestionsState();
 }
 
-class _ShowTaskPageState extends State<ShowTaskPage> {
+class _ShowQuestionsState extends State<ShowQuestions> {
   List _questions = [
     // {
     //   'questionText': 'What\'s your favorite color?',
@@ -57,6 +57,7 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
   List<Teacher> teacherslist = [];
   List<Task> taskslist = [];
   int count = -1;
+  List<Question> questionslist = [];
 
   Task sampletask = Task(
       creator: "",
@@ -130,54 +131,51 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
               Container(
                 height: 600,
                 child: FutureBuilder(
-                    future: gettaskdata(),
+                    future: gettingtaskdata(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return ListView.builder(
-                            itemCount: taskslist.length,
+                            itemCount: questionslist.length,
                             itemBuilder: (context, index) {
-                              // if (count < taskslist.length) {
-                              //   count++;
-                              //   _questions.add({
-                              //     'questionText': index.toString() +
-                              //         ": " +
-                              //         taskslist[index].questions[0].question,
-                              //     'answers': [
-                              //       {
-                              //         'text': taskslist[index]
-                              //             .questions[0]
-                              //             .options[0]
-                              //             .optionText,
-                              //         'score': 1
-                              //       },
-                              //       {
-                              //         'text': taskslist[index]
-                              //             .questions[0]
-                              //             .options[1]
-                              //             .optionText,
-                              //         'score': 0
-                              //       },
-                              //       {
-                              //         'text': taskslist[index]
-                              //             .questions[0]
-                              //             .options[2]
-                              //             .optionText,
-                              //         'score': 0
-                              //       },
-                              //       {
-                              //         'text': taskslist[index]
-                              //             .questions[0]
-                              //             .options[3]
-                              //             .optionText,
-                              //         'score': 0
-                              //       },
-                              //     ],
-                              //   });
-                              // }
+                              if (count < questionslist.length) {
+                                count++;
+                                _questions.add({
+                                  'questionText': index.toString() +
+                                      ": " +
+                                      questionslist[index].question,
+                                  'answers': [
+                                    {
+                                      'text': questionslist[index]
+                                          .options[0]
+                                          .optionText,
+                                      'score': 1
+                                    },
+                                    {
+                                      'text': questionslist[index]
+                                          .options[1]
+                                          .optionText,
+                                      'score': 0
+                                    },
+                                    {
+                                      'text': questionslist[index]
+                                          .options[2]
+                                          .optionText,
+                                      'score': 0
+                                    },
+                                    {
+                                      'text': questionslist[index]
+                                          .options[3]
+                                          .optionText,
+                                      'score': 0
+                                    },
+                                  ],
+                                });
+                              }
                               print(_questions.length);
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  // _questions list that send to quiz
                                   // Text(_questions[index]['questionText']
                                   //     .toString()),
                                   // Text(_questions[index]['answers'][0]['text']),
@@ -188,38 +186,39 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                                   // Text(_questions.length.toString()),
                                   // Text("Teacher json"),
                                   // Text("In tasks "),
-
-                                  GestureDetector(
-                                    onTap: () {
-                                      nextScreen(
-                                          context,
-                                          ShowQuestions(
-                                            taskid: taskslist[index].id,
-                                          ));
-                                    },
-                                    child: Container(
-                                      width: 500,
-                                      // color: Colors.red,
-                                      height: 90,
-                                      child: Card(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                                "creator : ${taskslist[index].creator} "),
-                                            Text(
-                                                "class : ${taskslist[index].taskClass}"),
-                                            Text(
-                                                "Subject ${taskslist[index].subject}"),
-                                            Text(taskslist[index].id),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                  // Text("creator : ${sampletask.creator} "),
+                                  Text(
+                                    index.toString() +
+                                        ": " +
+                                        questionslist[index].question,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w800),
                                   ),
+                                  Text("A: " +
+                                      questionslist[index]
+                                          .options[0]
+                                          .optionText),
+                                  Text("B: " +
+                                      questionslist[index]
+                                          .options[1]
+                                          .optionText),
+                                  Text("C: " +
+                                      questionslist[index]
+                                          .options[2]
+                                          .optionText),
+                                  Text("D: " +
+                                      questionslist[index]
+                                          .options[3]
+                                          .optionText),
 
-                                  SizedBox(
-                                    height: 30,
-                                  )
+                                  // Text(sampletask.questions)
+                                  // Text("class : ${taskslist[0].taskClass}"),
+                                  // Text("Subject ${taskslist[0].subject}"),
+
+                                  // SizedBox(
+                                  //   height: 30,
+                                  // )
 
                                   // Text("Question ${index}" +
                                   //     ": " +
@@ -312,6 +311,12 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
                     }),
               ),
 
+              ElevatedButton(
+                  onPressed: () {
+                    nextScreen(context, HomeScreen(questions: _questions));
+                  },
+                  child: Text("Quiz")),
+
               // ElevatedButton(
               //     onPressed: () {
               //       nextScreen(context, HomeScreen(questions: _questions));
@@ -351,6 +356,39 @@ class _ShowTaskPageState extends State<ShowTaskPage> {
       return taskslist;
     } else {
       return taskslist;
+    }
+  }
+
+  Future<List<Question>> gettingtaskdata() async {
+    final response = await http.get(Uri.parse(
+        'https://easyed-backend.onrender.com/api/teacher/${uid}/task/${widget.taskid}'));
+    var data = jsonDecode(response.body.toString());
+
+    // print(data.toString());
+
+    if (response.statusCode == 200) {
+      // print(data);
+      sampletask = Task.fromJson(data);
+      // sampleteachers. = dat;
+
+      questionslist = questionslist = List<Question>.from(sampletask.questions
+          .map((q) => Question(
+              question: q.question,
+              questionType: q.questionType,
+              options: q.options,
+              id: q.id)));
+
+      print(questionslist[0].toJson());
+
+      // teacherslist.add(sampleteachers);
+
+      // print(sampleteachers.toString());
+      // for (Map<String, dynamic> index in data) {
+      //   sampleteachers.add(Teacher.fromJson(index));
+      // }
+      return questionslist;
+    } else {
+      return questionslist;
     }
   }
 

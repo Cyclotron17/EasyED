@@ -11,6 +11,7 @@ import 'package:sapp/Pages/pdfPage.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/Pages/taskscreen.dart';
 import 'package:sapp/pdf_api.dart';
+import 'package:sapp/widgets/drawer.dart';
 import 'package:sapp/widgets/widgets.dart';
 
 class Dashboard extends StatefulWidget {
@@ -57,6 +58,8 @@ class _DashboardState extends State<Dashboard> {
 
     double devicewidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: MyDrawer(),
       body: Column(
         children: [
           Container(
@@ -71,7 +74,7 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    _scaffoldKey.currentState?.openDrawer();
+                    _scaffoldKey.currentState!.openDrawer();
                   },
                   child: Container(
                     height: 20,
@@ -270,6 +273,7 @@ class _DashboardState extends State<Dashboard> {
                   onTap: () {
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
+                      // screen: TaskScreen(),
                       screen: TaskScreen(),
                       withNavBar: true,
                       pageTransitionAnimation:
