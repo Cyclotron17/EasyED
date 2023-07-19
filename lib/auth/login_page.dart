@@ -185,12 +185,16 @@ class _LoginPageState extends State<LoginPage> {
                                     TextFormField(
                                       focusNode: focusNodeemail,
                                       decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xFF265AE8),
+                                            ),
+                                          ),
                                           enabledBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                width: 3,
-                                                color: Colors
-                                                    .black), //<-- SEE HERE
+                                              width: 3,
+                                              color: Color(0xFF265AE8),
+                                            ), //<-- SEE HERE
                                           ),
                                           labelText: "Email",
                                           prefixIcon: Icon(
@@ -217,12 +221,16 @@ class _LoginPageState extends State<LoginPage> {
                                       focusNode: focusNodepassword,
                                       obscureText: true,
                                       decoration: InputDecoration(
-                                          focusedBorder: OutlineInputBorder(),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xFF265AE8),
+                                            ),
+                                          ),
                                           enabledBorder: OutlineInputBorder(
                                             borderSide: BorderSide(
-                                                width: 3,
-                                                color: Colors
-                                                    .black), //<-- SEE HERE
+                                              width: 3,
+                                              color: Color(0xFF265AE8),
+                                            ), //<-- SEE HERE
                                           ),
                                           labelText: "Password",
                                           prefixIcon: Icon(
@@ -250,10 +258,10 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 20,
                               ),
                               SizedBox(
-                                width: double.infinity,
+                                width: 270,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.black,
+                                      primary: Color(0xFF265AE8),
                                       elevation: 0,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -279,8 +287,9 @@ class _LoginPageState extends State<LoginPage> {
                                   TextSpan(
                                       text: "Register here",
                                       style: const TextStyle(
-                                          color: Colors.black,
-                                          decoration: TextDecoration.underline),
+                                        color: Color(0xFF265AE8),
+                                        // decoration: TextDecoration.underline,
+                                      ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
                                           nextScreen(
