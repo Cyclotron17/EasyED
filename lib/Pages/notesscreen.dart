@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sapp/Pages/addpdfscreen.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/models/Teacher.dart';
 import 'package:sapp/pdf_api.dart';
@@ -19,6 +21,7 @@ class NotesScreen extends StatefulWidget {
 }
 
 class _NotesScreenState extends State<NotesScreen> {
+  Future onReturn() async => setState(() => getnotesdata());
   final uid = FirebaseAuth.instance.currentUser!.uid;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -65,14 +68,14 @@ class _NotesScreenState extends State<NotesScreen> {
   //     students: [],
   //     v: 1);
 
-  void handleClick(String value) {
-    switch (value) {
-      case 'Option 1':
-        break;
-      case 'Option 2':
-        break;
-    }
-  }
+  // void handleClick(String value) {
+  //   switch (value) {
+  //     case 'Option 1':
+  //       break;
+  //     case 'Option 2':
+  //       break;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -93,40 +96,104 @@ class _NotesScreenState extends State<NotesScreen> {
               ),
               Container(
                 width: devicewidth,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 29,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _scaffoldKey.currentState?.openDrawer();
-                      },
-                      child: Container(
-                        height: 20,
-                        width: 30,
-                        child: Image.asset("assets/iconmenu.png"),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // SizedBox(
+                      //   width: 29,
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            _scaffoldKey.currentState?.openDrawer();
+                          },
+                          child: Container(
+                            height: 20,
+                            width: 30,
+                            child: Image.asset("assets/iconmenu.png"),
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: devicewidth * 0.7,
-                    ),
-                    PopupMenuButton<String>(
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {'Option 1', 'Option 2'}.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ],
+                      Row(
+                        children: [
+                          Text(
+                            "Pdf",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 30),
+                          ),
+                          Text(
+                            "Notes",
+                            style: TextStyle(
+                                color: Color.fromRGBO(38, 90, 232, 1),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 30),
+                          ),
+                        ],
+                      ),
+
+                      InkWell(
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: Color.fromRGBO(38, 90, 232, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                )),
+                            onPressed: () async {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: AddPdfScreen(),
+                                withNavBar:
+                                    true, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.cupertino,
+                              );
+
+                              // nextScreen(context, AddPdfScreen());
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  "+ ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                Text(
+                                  "Add Notes",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            )),
+                      ),
+                      // SizedBox(
+                      //   width: devicewidth * 0.7,
+                      // ),
+                      // PopupMenuButton<String>(
+                      //   onSelected: handleClick,
+                      //   itemBuilder: (BuildContext context) {
+                      //     return {'Option 1', 'Option 2'}.map((String choice) {
+                      //       return PopupMenuItem<String>(
+                      //         value: choice,
+                      //         child: Text(choice),
+                      //       );
+                      //     }).toList();
+                      //   },
+                      // ),
+                    ],
+                  ),
                 ),
               ),
               Container(
-                height: 150,
+                height: 100,
                 width: devicewidth * 0.95,
                 decoration: BoxDecoration(
                   color: Color.fromRGBO(255, 255, 255, 1),
@@ -141,36 +208,33 @@ class _NotesScreenState extends State<NotesScreen> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 23,
-                    ),
+                    // SizedBox(
+                    //   height: 23,
+                    // ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         // SizedBox(
                         //   width: 22,
                         // ),
-                        Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Circle",
-                                style: TextStyle(
-                                    color: Color.fromRGBO(11, 18, 31, 1),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 26),
-                              ),
-                              Text(
-                                "Rituraj Sharma",
-                                style: TextStyle(
-                                    color: Color.fromRGBO(112, 116, 126, 1),
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 12),
-                              ),
-                            ],
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "STUDY",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(11, 18, 31, 1),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 26),
+                            ),
+                            Text(
+                              "Get Notes!",
+                              style: TextStyle(
+                                  color: Color.fromRGBO(112, 116, 126, 1),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 12),
+                            ),
+                          ],
                         ),
 
                         CircleAvatar(
@@ -180,9 +244,9 @@ class _NotesScreenState extends State<NotesScreen> {
                         )
                       ],
                     ),
-                    SizedBox(
-                      height: 35,
-                    ),
+                    // SizedBox(
+                    //   height: 35,
+                    // ),
                   ],
                 ),
               ),
@@ -192,22 +256,28 @@ class _NotesScreenState extends State<NotesScreen> {
               Container(
                 height: deviceheight * 0.5,
                 width: devicewidth * 0.78,
-                child: FutureBuilder(
-                    future: getnotesdata(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: noteslist.length,
-                          itemBuilder: (context, index) {
-                            return buildlistitem(context, index);
-                          },
-                        );
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    }),
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await refreshdata();
+                  },
+                  child: FutureBuilder(
+                      future: getnotesdata(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            itemCount: noteslist.length,
+                            itemBuilder: (context, index) {
+                              print(noteslist.length);
+                              return buildlistitem(context, index);
+                            },
+                          );
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }),
+                ),
               )
             ],
           ),
@@ -220,7 +290,7 @@ class _NotesScreenState extends State<NotesScreen> {
     double deviceheight = MediaQuery.of(context).size.height;
 
     double devicewidth = MediaQuery.of(context).size.width;
-    Notesbox subjectwidget = subjectBoxlist[index];
+    // Notesbox subjectwidget = subjectBoxlist[index];
     Note notedata = noteslist[index];
     return GestureDetector(
       onTap: () {
@@ -228,7 +298,7 @@ class _NotesScreenState extends State<NotesScreen> {
         if (index == 0) {}
       },
       child: Padding(
-        padding: const EdgeInsets.only(top: 13, bottom: 13),
+        padding: const EdgeInsets.only(top: 13, bottom: 7),
         child: GestureDetector(
           onTap: () async {
             final String url = notedata.notesPdfLink;
@@ -277,26 +347,48 @@ class _NotesScreenState extends State<NotesScreen> {
                             height: 27,
                             width: 27,
                           ),
-                          SizedBox(
-                            width: 22,
-                          ),
-                          Container(
-                            width: 140,
-                            child: Text(
-                              notedata.topic,
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color.fromRGBO(38, 50, 56, 1)),
+                          // SizedBox(
+                          //   width: 22,
+                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Container(
+                              width: 140,
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  notedata.topic,
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color.fromRGBO(38, 50, 56, 1)),
+                                ),
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            width: 64,
-                          ),
-                          Container(
-                            child: Icon(Icons.download),
-                            height: 27,
-                            width: 27,
+                          // SizedBox(
+                          //   width: 64,
+                          // ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Column(
+                              children: [
+                                Container(
+                                  // color: Colors.red,
+                                  child: SingleChildScrollView(
+                                    child: Center(
+                                        child: Text(
+                                      "By: " + notedata.creator,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 10),
+                                    )),
+                                  ),
+                                  height: 27,
+                                  width: 90,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -313,7 +405,8 @@ class _NotesScreenState extends State<NotesScreen> {
 
   Future<List<Note>> getnotesdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/$uid/notes'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/notes'));
+    // 'https://easyed-backend.onrender.com/api/teacher/$uid/notes'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
@@ -356,13 +449,26 @@ class _NotesScreenState extends State<NotesScreen> {
   //     return sampleteachers;
   //   }
   // }
+  Future<void> refreshdata() async {
+    await Navigator.push(
+            context, MaterialPageRoute(builder: (context) => NotesScreen()))
+        .then((value) => onReturn());
+  }
 
   void openPDF(BuildContext context, File file) {
-    nextScreen(
-        context,
-        PDFViewerPage(
-          file: file,
-        ));
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: PDFViewerPage(
+        file: file,
+      ),
+      withNavBar: true, // OPTIONAL VALUE. True by default.
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+    // nextScreen(
+    //     context,
+    //     PDFViewerPage(
+    //       file: file,
+    //     ));
   }
 }
 

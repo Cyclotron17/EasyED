@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/Quiz/home.dart';
 import 'package:sapp/models/Student.dart';
@@ -320,7 +321,15 @@ class _QuizPageState extends State<QuizPage> {
 
               ElevatedButton(
                   onPressed: () {
-                    nextScreen(context, HomeScreen(questions: _questions));
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: HomeScreen(questions: _questions),
+                      withNavBar: true, // OPTIONAL VALUE. True by default.
+                      pageTransitionAnimation:
+                          PageTransitionAnimation.cupertino,
+                    );
+
+                    // nextScreen(context, HomeScreen(questions: _questions));
                   },
                   child: Text("Quiz")),
             ],
@@ -347,7 +356,8 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<List<Task>> gettaskdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}/task'));
+    // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
     var data = jsonDecode(response.body.toString());
 
     if (response.statusCode == 200) {
@@ -362,7 +372,8 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<Teacher> getTeacherdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/sonamWangchik'));
+    // 'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
@@ -384,10 +395,18 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void openPDF(BuildContext context, File file) {
-    nextScreen(
-        context,
-        PDFViewerPage(
-          file: file,
-        ));
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: PDFViewerPage(
+        file: file,
+      ),
+      withNavBar: true, // OPTIONAL VALUE. True by default.
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+    // nextScreen(
+    //     context,
+    //     PDFViewerPage(
+    //       file: file,
+    //     ));
   }
 }

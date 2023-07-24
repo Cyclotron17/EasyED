@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sapp/Pages/addVideoScreen.dart';
 import 'package:sapp/Pages/addpdfscreen.dart';
+import 'package:sapp/Pages/addpostscreen.dart';
 import 'package:sapp/Pages/dashboardscreen.dart';
 import 'package:sapp/Pages/lecturesscreen.dart';
 import 'package:sapp/Pages/notesscreen.dart';
@@ -114,12 +115,12 @@ class _MyAppState extends State<MyApp> {
               useMaterial3: true,
             ),
             // home: ShowPostScreen(),
-            home: LoginPage(),
-            // home: _isSignedIn
-            //     ? isshow
-            //         ? StudentScreen()
-            //         : test2screen()
-            //     : LoginPage(),
+            // home: StudentScreen(),
+            home: _isSignedIn
+                ? isshow
+                    ? StudentScreen()
+                    : test2screen()
+                : LoginPage(),
           );
         });
   }

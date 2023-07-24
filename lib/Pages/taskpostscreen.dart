@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:random_string/random_string.dart';
 import 'package:sapp/Pages/addquestionscreen.dart';
+import 'package:sapp/Pages/globalvariables.dart';
 import 'package:sapp/Pages/studentscreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/helper/helper_function.dart';
@@ -24,7 +26,10 @@ class TaskPostScreen extends StatefulWidget {
   State<TaskPostScreen> createState() => _TaskPostScreenState();
 }
 
+bool isloading = false;
+
 class _TaskPostScreenState extends State<TaskPostScreen> {
+  final formKey = GlobalKey<FormState>();
   bool submitteddata = false;
   Teacher teacherdata = Teacher(
       id: "",
@@ -125,54 +130,95 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                 //           ),
                 //       hintText: "Enter id"),
                 // ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: creatorcontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
+
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: creatorcontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3,
+                      //               color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Creator Name"),
+                      //     validator: (val) {
+                      //       if (val!.length < 1) {
+                      //         return "Please Enter Creator Name";
+                      //       } else {
+                      //         return null;
+                      //       }
+                      //     },
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: classcontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Class"),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Class";
+                            } else {
+                              return null;
+                            }
+                          },
                         ),
-                        hintText: "Creator Name"),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: subjectcontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Subject"),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Subject";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: topiccontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter topic name"),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter topic";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: classcontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Class Name"),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: subjectcontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter Subject"),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: topiccontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter topic name"),
-                  ),
-                ),
+
                 // TextField(
                 //   controller: question1controller,
                 //   decoration: InputDecoration(
@@ -239,118 +285,147 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
                   onPressed: () async {
-                    String id = uid;
-                    String creatorname = creatorcontroller.text;
-                    String classnames = classcontroller.text;
-                    String subjectname = subjectcontroller.text;
-                    String topicname = topiccontroller.text;
-                    // String question1text = question1controller.text;
-                    // String question1type = question1typecontroller.text;
-                    // String answer1a = answer1acontroller.text;
-                    // String answer1b = answer1bcontroller.text;
-                    // String answer1c = answer1ccontroller.text;
-                    // String answer1d = answer1dcontroller.text;
+                    if (formKey.currentState!.validate()) {
+                      setState(() {
+                        isloading = true;
+                      });
 
-                    Task taskdata = Task(
-                      creator: creatorname,
-                      taskClass: classnames,
-                      subject: subjectname,
-                      topic: topicname,
-                      id: widget.taskid,
-                      questions: [
-                        // Question(
-                        //   question: question1text,
-                        //   questionType: question1type,
-                        //   options: [
-                        //     Option(
-                        //         optionNumber: "A",
-                        //         optionText: answer1a,
-                        //         id: "649ec068b4a2118b5424695d"),
-                        //     Option(
-                        //         optionNumber: "B",
-                        //         optionText: answer1b,
-                        //         id: "649ec068b4a2118b5424695e"),
-                        //     Option(
-                        //         optionNumber: "C",
-                        //         optionText: answer1c,
-                        //         id: "649ec068b4a2118b5424695f"),
-                        //     Option(
-                        //         optionNumber: "D",
-                        //         optionText: answer1d,
-                        //         id: "649ec068b4a2118b54246960"),
-                        //   ],
-                        //   id: "649ec068b4a2118b5424695c",
-                        // )
-                      ],
-                    );
+                      String id = uid;
+                      // String creatorname = creatorcontroller.text;
+                      String creatorname =
+                          globalteacherdata.userDetails[0].lastName;
+                      String classnames = classcontroller.text;
+                      String subjectname = subjectcontroller.text;
+                      String topicname = topiccontroller.text;
+                      // String question1text = question1controller.text;
+                      // String question1type = question1typecontroller.text;
+                      // String answer1a = answer1acontroller.text;
+                      // String answer1b = answer1bcontroller.text;
+                      // String answer1c = answer1ccontroller.text;
+                      // String answer1d = answer1dcontroller.text;
 
-                    // Teacher teacherdata = Teacher(
-                    //     id: uid,
-                    //     commons: [
-                    //       Common(
-                    //         createdOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         updatedOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         id: "649ebfb5b4a2118b5424694e",
-                    //       )
-                    //     ],
-                    //     userDetails: [
-                    //       UserDetail(
-                    //           firstName: firstname,
-                    //           lastName: lastname,
-                    //           email: email,
-                    //           mobile: mobile,
-                    //           avatar: "",
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     educationalDetails: [
-                    //       EducationalDetail(
-                    //           instituteName: institutename,
-                    //           educationalDetailClass: classname,
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     tasks: [],
-                    //     notes: [],
-                    //     videoLecture: [],
-                    //     students: [],
-                    //     v: 91);
-                    ///////String job = jobcontroller.text;
+                      Task taskdata = Task(
+                        creator: creatorname,
+                        taskClass: classnames,
+                        subject: subjectname,
+                        topic: topicname,
+                        id: widget.taskid,
+                        questions: [
+                          // Question(
+                          //   question: question1text,
+                          //   questionType: question1type,
+                          //   options: [
+                          //     Option(
+                          //         optionNumber: "A",
+                          //         optionText: answer1a,
+                          //         id: "649ec068b4a2118b5424695d"),
+                          //     Option(
+                          //         optionNumber: "B",
+                          //         optionText: answer1b,
+                          //         id: "649ec068b4a2118b5424695e"),
+                          //     Option(
+                          //         optionNumber: "C",
+                          //         optionText: answer1c,
+                          //         id: "649ec068b4a2118b5424695f"),
+                          //     Option(
+                          //         optionNumber: "D",
+                          //         optionText: answer1d,
+                          //         id: "649ec068b4a2118b54246960"),
+                          //   ],
+                          //   id: "649ec068b4a2118b5424695c",
+                          // )
+                        ],
+                      );
 
-                    // Teacher data = await submitdata(
-                    //   teacherdata: teacherdata,
-                    //   id: id,
+                      // Teacher teacherdata = Teacher(
+                      //     id: uid,
+                      //     commons: [
+                      //       Common(
+                      //         createdOn:
+                      //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //         updatedOn:
+                      //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //         id: "649ebfb5b4a2118b5424694e",
+                      //       )
+                      //     ],
+                      //     userDetails: [
+                      //       UserDetail(
+                      //           firstName: firstname,
+                      //           lastName: lastname,
+                      //           email: email,
+                      //           mobile: mobile,
+                      //           avatar: "",
+                      //           id: "649ebfb5b4a2118b5424694e")
+                      //     ],
+                      //     educationalDetails: [
+                      //       EducationalDetail(
+                      //           instituteName: institutename,
+                      //           educationalDetailClass: classname,
+                      //           id: "649ebfb5b4a2118b5424694e")
+                      //     ],
+                      //     tasks: [],
+                      //     notes: [],
+                      //     videoLecture: [],
+                      //     students: [],
+                      //     v: 91);
+                      ///////String job = jobcontroller.text;
 
-                    Task datatask =
-                        await submitdata(taskdata: taskdata, id: id, uid: uid);
+                      // Teacher data = await submitdata(
+                      //   teacherdata: teacherdata,
+                      //   id: id,
 
-                    ///////// createdOn: DateTime.now(),
-                    ////////// updatedOn: DateTime.now());
-                    // );
+                      Task datatask = await submitdata(
+                          taskdata: taskdata, id: id, uid: uid);
 
-                    // await FirebaseFirestore.instance
-                    //     .collection("users")
-                    //     .doc(uid)
-                    //     .update({
-                    //   "filldetails": true,
-                    // });
+                      ///////// createdOn: DateTime.now(),
+                      ////////// updatedOn: DateTime.now());
+                      // );
 
-                    setState(() {
-                      taskdata = datatask;
-                    });
+                      // await FirebaseFirestore.instance
+                      //     .collection("users")
+                      //     .doc(uid)
+                      //     .update({
+                      //   "filldetails": true,
+                      // });
 
-                    submitteddata = true;
-                    nextScreen(
+                      setState(() {
+                        isloading = false;
+                      });
+
+                      setState(() {
+                        taskdata = datatask;
+                      });
+
+                      submitteddata = true;
+
+                      PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        AddQuestionScreen(
+                        screen: AddQuestionScreen(
                           taskid: widget.taskid,
-                        ));
-                    // nextScreen(context, StudentScreen());
+                        ),
+                        withNavBar: true, // OPTIONAL VALUE. True by default.
+                        pageTransitionAnimation:
+                            PageTransitionAnimation.cupertino,
+                      );
+
+                      // nextScreen(
+                      //     context,
+                      //     AddQuestionScreen(
+                      //       taskid: widget.taskid,
+                      //     ));
+                      // nextScreen(context, StudentScreen());
+                    }
                   },
-                  child: Text(
-                    "ADD QUESTIONS",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: isloading
+                      ? Container(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                      : Text(
+                          "ADD QUESTIONS",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
                 ),
 
                 // ElevatedButton(
@@ -430,7 +505,9 @@ class _TaskPostScreenState extends State<TaskPostScreen> {
     // );
 
     var response = await http.post(
-      Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+      Uri.http('ec2-13-234-152-69.ap-south-1.compute.amazonaws.com',
+          '/api/user/${uid}/task'),
+      // Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode(taskdata),

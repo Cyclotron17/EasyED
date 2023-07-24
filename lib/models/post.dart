@@ -17,6 +17,7 @@ class Post {
   String avatar;
   String content;
   bool isBlocked;
+  String? postFormat;
   DateTime date;
   List<Like> likes;
   List<Comment> comments;
@@ -29,6 +30,7 @@ class Post {
     required this.avatar,
     required this.content,
     required this.isBlocked,
+    this.postFormat,
     required this.date,
     required this.likes,
     required this.comments,
@@ -42,6 +44,7 @@ class Post {
         avatar: json["avatar"],
         content: json["content"],
         isBlocked: json["isBlocked"],
+        postFormat: json["postFormat"],
         date: DateTime.parse(json["date"]),
         likes: List<Like>.from(json["likes"].map((x) => Like.fromJson(x))),
         comments: List<Comment>.from(
@@ -56,6 +59,7 @@ class Post {
         "avatar": avatar,
         "content": content,
         "isBlocked": isBlocked,
+        "postFormat": postFormat,
         "date": date.toIso8601String(),
         "likes": List<dynamic>.from(likes.map((x) => x.toJson())),
         "comments": List<dynamic>.from(comments.map((x) => x.toJson())),

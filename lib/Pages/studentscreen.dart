@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'package:sapp/Pages/chapterscreen.dart';
+import 'package:sapp/Pages/globalvariables.dart';
+import 'package:sapp/models/Teacher.dart';
 
 import 'package:sapp/widgets/bottonnavigationbar.dart';
 import 'package:sapp/widgets/drawer.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class StudentScreen extends StatefulWidget {
   const StudentScreen({super.key});
@@ -15,12 +20,55 @@ class StudentScreen extends StatefulWidget {
 }
 
 class _StudentScreenState extends State<StudentScreen> {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+
+  Future<Teacher> getTeacherdata() async {
+    final response = await http.get(
+      Uri.parse(
+          'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}'),
+      // Uri.parse('https://easyed-backend.onrender.com/api/teacher/${uid}'),
+    );
+    var data = jsonDecode(response.body.toString());
+
+    // print(data.toString());
+
+    if (response.statusCode == 200) {
+      globalteacherdata = Teacher.fromJson(data);
+      // sampleteachers. = dat;
+
+      // print(sampleteachers.toString());
+      // for (Map<String, dynamic> index in data) {
+      //   sampleteachers.add(Teacher.fromJson(index));
+      // }
+      return globalteacherdata;
+    } else {
+      return globalteacherdata;
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTeacherdata();
+  }
+
   int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationwidget(),
+    double deviceheight = MediaQuery.of(context).size.height;
+    // double appbarheight = 45;
+
+    double devicewidth = MediaQuery.of(context).size.width;
+
+    globaldeviceheight = deviceheight;
+    globaldevicewidth = devicewidth;
+    return ScaffoldMessenger(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        bottomNavigationBar: BottomNavigationwidget(),
+      ),
     );
   }
 }
@@ -85,17 +133,17 @@ class _Page1State extends State<Page1> {
                     SizedBox(
                       width: devicewidth * 0.7,
                     ),
-                    PopupMenuButton<String>(
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {'Option 1', 'Option 2'}.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
+                    // PopupMenuButton<String>(
+                    //   onSelected: handleClick,
+                    //   itemBuilder: (BuildContext context) {
+                    //     return {'Option 1', 'Option 2'}.map((String choice) {
+                    //       return PopupMenuItem<String>(
+                    //         value: choice,
+                    //         child: Text(choice),
+                    //       );
+                    //     }).toList();
+                    //   },
+                    // ),
                   ],
                 ),
               ),

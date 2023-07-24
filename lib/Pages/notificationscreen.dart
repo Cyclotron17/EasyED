@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sapp/Pages/globalvariables.dart';
 
 import 'package:sapp/widgets/drawer.dart';
 
@@ -13,10 +14,14 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   List<Notificationbox> subjectBoxlist = [
-    Notificationbox(notification: "Maths Assignment 1", status: "is pending"),
-    Notificationbox(notification: "MAth Assignment 2", status: "is pending"),
-    Notificationbox(notification: "MAth Assignment 3", status: "is pending"),
-    Notificationbox(notification: "MAth Assignment 4", status: "is pending"),
+    Notificationbox(
+        notification: "@raj123 liked your post", status: "Got a like!"),
+    Notificationbox(
+        notification: "@manoj43 liked your post", status: "Got a like!"),
+    Notificationbox(
+        notification: "@mohan92 liked your post", status: "Got a like!"),
+    Notificationbox(
+        notification: "@kunal51 liked your post", status: "Got a like!"),
   ];
 
   void handleClick(String value) {
@@ -34,6 +39,11 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
     double appbarheight = 45;
 
     double devicewidth = MediaQuery.of(context).size.width;
+    String format = "video/png";
+    String email = "dhruv2122@gmail.com";
+    String emailid = "dhruvrastogi1797@kiet.edu";
+
+    String username = emailid.split('@')[0];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -45,6 +55,15 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
               Container(
                 height: 90 - appbarheight,
               ),
+
+              // Text(email.replaceFirst("@gmail.com", "")),
+              Text(username),
+              Text(format.contains("video").toString()),
+
+              // Text(globalteacherdata.id.substring(17)),
+              // Text(globalteacherdata.userDetails[0].lastName),
+              // Text(globalusername!),
+              Text(globalteacherdata.id),
               Container(
                 width: devicewidth,
                 child: Row(
@@ -70,17 +89,17 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
                             color: Color.fromRGBO(38, 50, 56, 1)),
                       ),
                     ),
-                    PopupMenuButton<String>(
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {'Option 1', 'Option 2'}.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
+                    // PopupMenuButton<String>(
+                    //   onSelected: handleClick,
+                    //   itemBuilder: (BuildContext context) {
+                    //     return {'Option 1', 'Option 2'}.map((String choice) {
+                    //       return PopupMenuItem<String>(
+                    //         value: choice,
+                    //         child: Text(choice),
+                    //       );
+                    //     }).toList();
+                    //   },
+                    // ),
                   ],
                 ),
               ),
@@ -170,13 +189,12 @@ class _NOtificationScreenState extends State<NOtificationScreen> {
                     ],
                   ),
                   Container(
-                    height: 24,
-                    width: 24,
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage("assets/check-circle.png"),
-                      backgroundColor: Colors.white,
-                    ),
-                  )
+                      height: 24,
+                      width: 24,
+                      child: Image.asset(
+                        "assets/likes.png",
+                        color: Color.fromRGBO(38, 90, 232, 1),
+                      ))
                 ],
               ),
             ],

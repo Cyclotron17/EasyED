@@ -24,6 +24,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool isloading = false;
   FocusNode focusNodeemail = FocusNode();
   FocusNode focusNodepassword = FocusNode();
   final formKey = GlobalKey<FormState>();
@@ -96,8 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           width: 400,
                           child: Center(
                               child: CircularProgressIndicator(
-                            color: Color.fromRGBO(138, 84, 192, 1),
-                          )),
+                                  color: Color.fromRGBO(38, 90, 232, 1))),
                         );
 
                       var data = snapshot.data!.docs;
@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                                     children: [
                                       Text(
                                         textAlign: TextAlign.center,
-                                        "Welcome Back to\n EduEd",
+                                        "Welcome Back to\n EasyED",
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 24,
@@ -266,13 +266,27 @@ class _LoginPageState extends State<LoginPage> {
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
                                               BorderRadius.circular(30))),
-                                  child: const Text(
-                                    "Sign In",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  ),
-                                  onPressed: () {
-                                    login(snapshot);
+                                  child: isloading
+                                      ? Container(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                              color: Colors.white),
+                                        )
+                                      : Text(
+                                          "Sign In",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 16),
+                                        ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      isloading = true;
+                                    });
+                                    await login(snapshot);
+                                    setState(() {
+                                      isloading = false;
+                                    });
                                   },
                                 ),
                               ),
@@ -305,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  login(AsyncSnapshot snapshots) async {
+  Future login(AsyncSnapshot snapshots) async {
     if (formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;

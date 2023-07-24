@@ -6,9 +6,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 import 'package:random_string/random_string.dart';
 import 'package:sapp/Pages/addquestionscreen.dart';
+import 'package:sapp/Pages/globalvariables.dart';
+import 'package:sapp/Pages/showpostscreen.dart';
 import 'package:sapp/Pages/studentscreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/helper/helper_function.dart';
@@ -35,10 +38,33 @@ class AddPostScreen extends StatefulWidget {
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
+  int sizeInBytes = 0;
+  double sizeInMb = 0;
+  bool greatersizeprompt = false;
+  String filename = "";
+  final formKey = GlobalKey<FormState>();
+  bool isimage = false;
+  final uid = FirebaseAuth.instance.currentUser!.uid;
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
   bool isloading = false;
+  bool isloadingsubmit = false;
   VideoLecture lecturedata = VideoLecture(
       subject: "", topic: "", videoLink: "", videoTitle: "", id: "");
+  List<Teacher> teacherslist = [];
+
+  bool isimageloading = false;
+  bool isvideoloading = false;
+
+  Teacher sampleteachers = Teacher(
+      id: 'id',
+      commons: [],
+      userDetails: [],
+      educationalDetails: [],
+      tasks: [],
+      notes: [],
+      videoLecture: [],
+      students: [],
+      v: 1);
 
   Post postdata = Post(
       id: '',
@@ -135,7 +161,32 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
       setState(() {
         uploadimage = File(file.files.single.path!);
+        filename = basename(uploadimage!.path);
+        sizeInBytes = uploadimage!.lengthSync();
+        sizeInMb = sizeInBytes / (1024 * 1024);
       });
+
+      isimage = true;
+
+      // await sendFileMessage(video, MessageEnum.video, currentuserid, sp,
+      //     widget.partnercode, widget.connectcode, widget.getgrouprank);
+    }
+  }
+
+  Future selectvideo() async {
+    FilePickerResult? file =
+        await FilePicker.platform.pickFiles(type: FileType.video);
+    if (File(file!.files.single.path!) != null) {
+      uploadimage = File(file.files.single.path!);
+
+      setState(() {
+        uploadimage = File(file.files.single.path!);
+        filename = basename(uploadimage!.path);
+        sizeInBytes = uploadimage!.lengthSync();
+        sizeInMb = sizeInBytes / (1024 * 1024);
+      });
+
+      isimage = true;
 
       // await sendFileMessage(video, MessageEnum.video, currentuserid, sp,
       //     widget.partnercode, widget.connectcode, widget.getgrouprank);
@@ -159,310 +210,678 @@ class _AddPostScreenState extends State<AddPostScreen> {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     print("uid from AddPostScreen  ${uid}");
     AuthService authService = AuthService();
-    return Scaffold(
-      appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Container(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                Text(userName),
-                Text(email),
-                Text(uid),
-                // Text(widget.taskid),
+    return ScaffoldMessenger(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 100,
+          title: Text(
+            'ADD POSTS',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: FutureBuilder(
+              future: getTeacherdata(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  if (uploadimage != null) {
+                    sizeInBytes = uploadimage!.lengthSync();
+                    sizeInMb = sizeInBytes / (1024 * 1024);
+                  }
 
-                GestureDetector(
-                    onTap: () async {
-                      await authService.signOut();
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const LoginPage()),
-                          (route) => false);
-                    },
-                    child: Text("Signout")),
-                // TextField(
-                //   controller: idcontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter id"),
-                // ),
-                // TextField(
-                //   controller: subjectcontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Subject Name"),
-                // ),
-                TextField(
-                  controller: contentcontroller,
-                  decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          // borderRadius: BorderRadius.circular(20),
-                          ),
-                      hintText: "Enter content.."),
-                ),
-                // TextField(
-                //   controller: videotitlecontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter video title"),
-                // ),
+                  return ListView.builder(
+                      itemCount: 1,
+                      itemBuilder: (context, index) {
+                        return Container(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                // Text(sampleteachers.userDetails[0].avatar),
+                                // Text(userName),
+                                // Text(email),
+                                // Text(uid),
+                                // // Text(widget.taskid),
 
-                uploadimage != null
-                    ? Container(
-                        height: 400,
-                        width: 400,
-                        child: Image.file(uploadimage!))
-                    : Container(
-                        height: 400,
-                        width: 400,
-                        child: Center(
-                          child: Text("Upload image "),
-                        ),
-                      ),
+                                // GestureDetector(
+                                //     onTap: () async {
+                                //       await authService.signOut();
+                                //       Navigator.of(context).pushAndRemoveUntil(
+                                //           MaterialPageRoute(
+                                //               builder: (context) =>
+                                //                   const LoginPage()),
+                                //           (route) => false);
+                                //     },
+                                //     child: Text("Signout")),
 
-                ElevatedButton(
-                    onPressed: (() async {
-                      setState(() {
-                        isloading = true;
+                                uploadimage != null
+                                    ? Row(
+                                        children: [
+                                          Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Image.asset(
+                                                  "assets/files.png")),
+                                          Container(
+                                              // color: Colors.red,
+                                              width: globaldevicewidth! * 0.7,
+                                              child: Text(
+                                                filename,
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w800),
+                                              )),
+                                        ],
+                                      )
+                                    : Row(
+                                        children: [
+                                          Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Image.asset(
+                                                  "assets/files.png")),
+                                          Container(
+                                              // color: Colors.red,
+                                              width: globaldevicewidth! * 0.7,
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 3.0),
+                                                child: Text(
+                                                  "Please upload a file",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w800),
+                                                ),
+                                              )),
+                                        ],
+                                      ),
+
+                                greatersizeprompt
+                                    ? Row(
+                                        children: [
+                                          Text(
+                                            "please upload file less than 50 mb",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ],
+                                      )
+                                    : Text(""),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          greatersizeprompt = false;
+                                          isimageloading = true;
+                                        });
+
+                                        await selectimage();
+
+                                        setState(() {
+                                          isimageloading = false;
+                                        });
+                                      },
+                                      child: isimageloading
+                                          ? Container(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                  color: Color.fromRGBO(
+                                                      38, 90, 232, 1)),
+                                            )
+                                          : Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Image.asset(
+                                                  "assets/photocamera.png"),
+                                            ),
+                                    ),
+                                    SizedBox(width: 20),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        setState(() {
+                                          greatersizeprompt = false;
+                                          isvideoloading = true;
+                                        });
+
+                                        await selectvideo();
+
+                                        setState(() {
+                                          isvideoloading = false;
+                                        });
+                                      },
+                                      child: isvideoloading
+                                          ? Container(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                  color: Color.fromRGBO(
+                                                      38, 90, 232, 1)),
+                                            )
+                                          : Container(
+                                              height: 40,
+                                              width: 40,
+                                              child: Image.asset(
+                                                  "assets/videocamera.png"),
+                                            ),
+                                    ),
+                                  ],
+                                ),
+
+                                // TextField(
+                                //   controller: idcontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter id"),
+                                // ),
+                                // TextField(
+                                //   controller: subjectcontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Subject Name"),
+                                // ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 24.0),
+                                  child: Form(
+                                    key: formKey,
+                                    child: TextFormField(
+                                      minLines: 15,
+                                      maxLines: 20,
+                                      keyboardType: TextInputType.multiline,
+                                      controller: contentcontroller,
+                                      decoration: InputDecoration(
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 3,
+                                              color: Color(0xFF265AE8),
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              width: 3,
+                                              color: Colors.black,
+                                            ), //<-- SEE HERE
+                                          ),
+                                          hintText: "Enter content.."),
+                                      validator: (val) {
+                                        if (val!.length < 1) {
+                                          return "Please Enter Content";
+                                        } else {
+                                          return null;
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                // TextField(
+                                //   controller: videotitlecontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter video title"),
+                                // ),
+
+                                // ElevatedButton(
+                                //     onPressed: (() async {
+                                //       setState(() {
+                                //         isloading = true;
+                                //       });
+
+                                //       await selectimage();
+
+                                //       setState(() {
+                                //         isloading = false;
+                                //       });
+                                //     }),
+                                //     child: Text("Upload image")),
+                                // TextField(
+                                //   controller: topiccontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter topic name"),
+                                // ),
+                                // TextField(
+                                //   controller: question1controller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter question 1 "),
+                                // ),
+                                // TextField(
+                                //   controller: question1typecontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter question 1 type "),
+                                // ),
+                                // TextField(
+                                //   controller: answer1acontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter option a "),
+                                // ),
+                                // TextField(
+                                //   controller: answer1bcontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter option b "),
+                                // ),
+                                // TextField(
+                                //   controller: answer1ccontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter option c "),
+                                // ),
+                                // TextField(
+                                //   controller: answer1dcontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "Enter option d "),
+                                // ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                // TextField(
+                                //   controller: jobcontroller,
+                                //   decoration: InputDecoration(
+                                //       border: OutlineInputBorder(
+                                //           // borderRadius: BorderRadius.circular(20),
+                                //           ),
+                                //       hintText: "job title"),
+                                // ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 17.0),
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Color(0xFF265AE8),
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(30))),
+                                    onPressed: () async {
+                                      if (formKey.currentState!.validate()) {
+                                        if (!isimage) {
+                                          //code commented data
+                                          // final snackBar = SnackBar(
+                                          //   behavior: SnackBarBehavior.floating,
+                                          //   margin: EdgeInsets.only(),
+                                          //   backgroundColor: Colors.black,
+                                          //   duration: Duration(seconds: 1),
+                                          //   dismissDirection:
+                                          //       DismissDirection.horizontal,
+                                          //   content: Container(
+                                          //     height: 30,
+                                          //     child: const Text(
+                                          //       'Please upload image.',
+                                          //       style: TextStyle(),
+                                          //     ),
+                                          //   ),
+                                          // );
+
+                                          // ScaffoldMessenger.of(context)
+                                          //     .hideCurrentSnackBar();
+
+                                          // ScaffoldMessenger.of(context)
+                                          //     .showSnackBar(snackBar);
+                                          //code commented data
+
+                                          setState(() {
+                                            isloadingsubmit = true;
+                                          });
+
+                                          String userid = uid;
+                                          String content =
+                                              contentcontroller.text;
+
+                                          // String question1text = question1controller.text;
+                                          // String question1type = question1typecontroller.text;
+                                          // String answer1a = answer1acontroller.text;
+                                          // String answer1b = answer1bcontroller.text;
+                                          // String answer1c = answer1ccontroller.text;
+                                          // String answer1d = answer1dcontroller.text;
+
+                                          // Task taskdata = Task(
+                                          //   creator: creatorname,
+                                          //   taskClass: classnames,
+                                          //   subject: subjectname,
+                                          //   topic: topicname,
+                                          //    id:" widget.taskid",
+                                          //   questions: [
+                                          //     // Question(
+                                          //     //   question: question1text,
+                                          //     //   questionType: question1type,
+                                          //     //   options: [
+                                          //     //     Option(
+                                          //     //         optionNumber: "A",
+                                          //     //         optionText: answer1a,
+                                          //     //         id: "649ec068b4a2118b5424695d"),
+                                          //     //     Option(
+                                          //     //         optionNumber: "B",
+                                          //     //         optionText: answer1b,
+                                          //     //         id: "649ec068b4a2118b5424695e"),
+                                          //     //     Option(
+                                          //     //         optionNumber: "C",
+                                          //     //         optionText: answer1c,
+                                          //     //         id: "649ec068b4a2118b5424695f"),
+                                          //     //     Option(
+                                          //     //         optionNumber: "D",
+                                          //     //         optionText: answer1d,
+                                          //     //         id: "649ec068b4a2118b54246960"),
+                                          //     //   ],
+                                          //     //   id: "649ec068b4a2118b5424695c",
+                                          //     // )
+                                          //   ],
+                                          // );
+
+                                          // Teacher teacherdata = Teacher(
+                                          //     id: uid,
+                                          //     commons: [
+                                          //       Common(
+                                          //         createdOn:
+                                          //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                                          //         updatedOn:
+                                          //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                                          //         id: "649ebfb5b4a2118b5424694e",
+                                          //       )
+                                          //     ],
+                                          //     userDetails: [
+                                          //       UserDetail(
+                                          //           firstName: firstname,
+                                          //           lastName: lastname,
+                                          //           email: email,
+                                          //           mobile: mobile,
+                                          //           avatar: "",
+                                          //           id: "649ebfb5b4a2118b5424694e")
+                                          //     ],
+                                          //     educationalDetails: [
+                                          //       EducationalDetail(
+                                          //           instituteName: institutename,
+                                          //           educationalDetailClass: classname,
+                                          //           id: "649ebfb5b4a2118b5424694e")
+                                          //     ],
+                                          //     tasks: [],
+                                          //     notes: [],
+                                          //     videoLecture: [],
+                                          //     students: [],
+                                          //     v: 91);
+                                          ///////String job = jobcontroller.text;
+
+                                          // Teacher data = await submitdata(
+                                          //   teacherdata: teacherdata,
+                                          //   id: id,
+
+                                          await submittextdataonly(
+                                              filepath: uploadimage,
+                                              content: content,
+                                              uid: userid,
+                                              avatarimage: sampleteachers
+                                                  .userDetails[0].avatar);
+
+                                          ///////// createdOn: DateTime.now(),
+                                          ////////// updatedOn: DateTime.now());
+                                          // );
+
+                                          // await FirebaseFirestore.instance
+                                          //     .collection("users")
+                                          //     .doc(uid)
+                                          //     .update({
+                                          //   "filldetails": true,
+                                          // });
+
+                                          // setState(() {
+                                          //   taskdata = datatask;
+                                          // });
+                                          setState(() {
+                                            isloadingsubmit = false;
+                                          });
+
+                                          submitteddata = true;
+
+                                          // PersistentNavBarNavigator
+                                          //     .pushNewScreen(
+                                          //   context,
+                                          //   screen: ShowPostScreen(),
+                                          //   withNavBar:
+                                          //       true, // OPTIONAL VALUE. True by default.
+                                          //   pageTransitionAnimation:
+                                          //       PageTransitionAnimation
+                                          //           .cupertino,
+                                          // );
+
+                                          // nextScreen(context, ShowPostScreen());
+                                        } else {
+                                          if (sizeInMb > 50) {
+                                            setState(() {
+                                              greatersizeprompt = true;
+                                            });
+
+                                            print(sizeInMb);
+                                          } else {
+                                            setState(() {
+                                              isloadingsubmit = true;
+                                            });
+
+                                            String userid = uid;
+                                            String content =
+                                                contentcontroller.text;
+
+                                            // String question1text = question1controller.text;
+                                            // String question1type = question1typecontroller.text;
+                                            // String answer1a = answer1acontroller.text;
+                                            // String answer1b = answer1bcontroller.text;
+                                            // String answer1c = answer1ccontroller.text;
+                                            // String answer1d = answer1dcontroller.text;
+
+                                            // Task taskdata = Task(
+                                            //   creator: creatorname,
+                                            //   taskClass: classnames,
+                                            //   subject: subjectname,
+                                            //   topic: topicname,
+                                            //    id:" widget.taskid",
+                                            //   questions: [
+                                            //     // Question(
+                                            //     //   question: question1text,
+                                            //     //   questionType: question1type,
+                                            //     //   options: [
+                                            //     //     Option(
+                                            //     //         optionNumber: "A",
+                                            //     //         optionText: answer1a,
+                                            //     //         id: "649ec068b4a2118b5424695d"),
+                                            //     //     Option(
+                                            //     //         optionNumber: "B",
+                                            //     //         optionText: answer1b,
+                                            //     //         id: "649ec068b4a2118b5424695e"),
+                                            //     //     Option(
+                                            //     //         optionNumber: "C",
+                                            //     //         optionText: answer1c,
+                                            //     //         id: "649ec068b4a2118b5424695f"),
+                                            //     //     Option(
+                                            //     //         optionNumber: "D",
+                                            //     //         optionText: answer1d,
+                                            //     //         id: "649ec068b4a2118b54246960"),
+                                            //     //   ],
+                                            //     //   id: "649ec068b4a2118b5424695c",
+                                            //     // )
+                                            //   ],
+                                            // );
+
+                                            // Teacher teacherdata = Teacher(
+                                            //     id: uid,
+                                            //     commons: [
+                                            //       Common(
+                                            //         createdOn:
+                                            //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                                            //         updatedOn:
+                                            //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                                            //         id: "649ebfb5b4a2118b5424694e",
+                                            //       )
+                                            //     ],
+                                            //     userDetails: [
+                                            //       UserDetail(
+                                            //           firstName: firstname,
+                                            //           lastName: lastname,
+                                            //           email: email,
+                                            //           mobile: mobile,
+                                            //           avatar: "",
+                                            //           id: "649ebfb5b4a2118b5424694e")
+                                            //     ],
+                                            //     educationalDetails: [
+                                            //       EducationalDetail(
+                                            //           instituteName: institutename,
+                                            //           educationalDetailClass: classname,
+                                            //           id: "649ebfb5b4a2118b5424694e")
+                                            //     ],
+                                            //     tasks: [],
+                                            //     notes: [],
+                                            //     videoLecture: [],
+                                            //     students: [],
+                                            //     v: 91);
+                                            ///////String job = jobcontroller.text;
+
+                                            // Teacher data = await submitdata(
+                                            //   teacherdata: teacherdata,
+                                            //   id: id,
+
+                                            await submitdata(
+                                                filepath: uploadimage,
+                                                content: content,
+                                                uid: userid,
+                                                avatarimage: sampleteachers
+                                                    .userDetails[0].avatar);
+
+                                            ///////// createdOn: DateTime.now(),
+                                            ////////// updatedOn: DateTime.now());
+                                            // );
+
+                                            // await FirebaseFirestore.instance
+                                            //     .collection("users")
+                                            //     .doc(uid)
+                                            //     .update({
+                                            //   "filldetails": true,
+                                            // });
+
+                                            // setState(() {
+                                            //   taskdata = datatask;
+                                            // });
+                                            setState(() {
+                                              isloadingsubmit = false;
+                                            });
+
+                                            submitteddata = true;
+
+                                            PersistentNavBarNavigator
+                                                .pushNewScreen(
+                                              context,
+                                              screen: ShowPostScreen(),
+                                              withNavBar:
+                                                  true, // OPTIONAL VALUE. True by default.
+                                              pageTransitionAnimation:
+                                                  PageTransitionAnimation
+                                                      .cupertino,
+                                            );
+
+                                            // nextScreen(context, ShowPostScreen());
+                                          }
+                                        }
+                                      }
+                                    },
+                                    child: isloadingsubmit
+                                        ? Container(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                                color: Colors.white),
+                                          )
+                                        : Text(
+                                            "Submit",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16),
+                                          ),
+                                  ),
+                                ),
+
+                                // ElevatedButton(
+                                //   onPressed: () {
+                                //     if (submitteddata == false) {
+                                //       final snackBar = SnackBar(
+                                //         backgroundColor: Colors.red,
+                                //         duration: Duration(seconds: 1),
+                                //         dismissDirection:
+                                //             DismissDirection.horizontal,
+                                //         content: const Text(
+                                //           'Please Submit this question first',
+                                //           style: TextStyle(),
+                                //         ),
+                                //       );
+                                //       ScaffoldMessenger.of(context)
+                                //           .hideCurrentSnackBar();
+
+                                //       ScaffoldMessenger.of(context)
+                                //           .showSnackBar(snackBar);
+                                //     } else {
+                                //       setState(() {
+                                //         contentcontroller.text = "";
+
+                                //         uploadimage = null;
+                                //         // question1controller.text = "";
+                                //         // question1typecontroller.text = "";
+                                //         // answer1acontroller.text = "";
+                                //         // answer1bcontroller.text = "";
+                                //         // answer1ccontroller.text = "";
+                                //         // answer1dcontroller.text = "";
+                                //         submitteddata = false;
+                                //       });
+                                //     }
+                                //   },
+                                //   child: Text("Next post "),
+                                // ),
+                                // ElevatedButton(
+                                //     onPressed: () {
+                                //       nextScreen(
+                                //           context,
+                                //           AddQuestionScreen(
+                                //             taskid: "widget.taskid",
+                                //           ));
+                                //     },
+                                //     child: Text("add questions "))
+                              ],
+                            ));
                       });
-
-                      await selectimage();
-
-                      setState(() {
-                        isloading = false;
-                      });
-                    }),
-                    child: Text("Upload image")),
-                // TextField(
-                //   controller: topiccontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter topic name"),
-                // ),
-                // TextField(
-                //   controller: question1controller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter question 1 "),
-                // ),
-                // TextField(
-                //   controller: question1typecontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter question 1 type "),
-                // ),
-                // TextField(
-                //   controller: answer1acontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter option a "),
-                // ),
-                // TextField(
-                //   controller: answer1bcontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter option b "),
-                // ),
-                // TextField(
-                //   controller: answer1ccontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter option c "),
-                // ),
-                // TextField(
-                //   controller: answer1dcontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "Enter option d "),
-                // ),
-                SizedBox(
-                  height: 20,
-                ),
-                // TextField(
-                //   controller: jobcontroller,
-                //   decoration: InputDecoration(
-                //       border: OutlineInputBorder(
-                //           // borderRadius: BorderRadius.circular(20),
-                //           ),
-                //       hintText: "job title"),
-                // ),
-                ElevatedButton(
-                  onPressed: () async {
-                    String userid = uid;
-                    String content = contentcontroller.text;
-
-                    // String question1text = question1controller.text;
-                    // String question1type = question1typecontroller.text;
-                    // String answer1a = answer1acontroller.text;
-                    // String answer1b = answer1bcontroller.text;
-                    // String answer1c = answer1ccontroller.text;
-                    // String answer1d = answer1dcontroller.text;
-
-                    // Task taskdata = Task(
-                    //   creator: creatorname,
-                    //   taskClass: classnames,
-                    //   subject: subjectname,
-                    //   topic: topicname,
-                    //    id:" widget.taskid",
-                    //   questions: [
-                    //     // Question(
-                    //     //   question: question1text,
-                    //     //   questionType: question1type,
-                    //     //   options: [
-                    //     //     Option(
-                    //     //         optionNumber: "A",
-                    //     //         optionText: answer1a,
-                    //     //         id: "649ec068b4a2118b5424695d"),
-                    //     //     Option(
-                    //     //         optionNumber: "B",
-                    //     //         optionText: answer1b,
-                    //     //         id: "649ec068b4a2118b5424695e"),
-                    //     //     Option(
-                    //     //         optionNumber: "C",
-                    //     //         optionText: answer1c,
-                    //     //         id: "649ec068b4a2118b5424695f"),
-                    //     //     Option(
-                    //     //         optionNumber: "D",
-                    //     //         optionText: answer1d,
-                    //     //         id: "649ec068b4a2118b54246960"),
-                    //     //   ],
-                    //     //   id: "649ec068b4a2118b5424695c",
-                    //     // )
-                    //   ],
-                    // );
-
-                    // Teacher teacherdata = Teacher(
-                    //     id: uid,
-                    //     commons: [
-                    //       Common(
-                    //         createdOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         updatedOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         id: "649ebfb5b4a2118b5424694e",
-                    //       )
-                    //     ],
-                    //     userDetails: [
-                    //       UserDetail(
-                    //           firstName: firstname,
-                    //           lastName: lastname,
-                    //           email: email,
-                    //           mobile: mobile,
-                    //           avatar: "",
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     educationalDetails: [
-                    //       EducationalDetail(
-                    //           instituteName: institutename,
-                    //           educationalDetailClass: classname,
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     tasks: [],
-                    //     notes: [],
-                    //     videoLecture: [],
-                    //     students: [],
-                    //     v: 91);
-                    ///////String job = jobcontroller.text;
-
-                    // Teacher data = await submitdata(
-                    //   teacherdata: teacherdata,
-                    //   id: id,
-
-                    submitdata(
-                        filepath: uploadimage, content: content, uid: userid);
-
-                    ///////// createdOn: DateTime.now(),
-                    ////////// updatedOn: DateTime.now());
-                    // );
-
-                    // await FirebaseFirestore.instance
-                    //     .collection("users")
-                    //     .doc(uid)
-                    //     .update({
-                    //   "filldetails": true,
-                    // });
-
-                    // setState(() {
-                    //   taskdata = datatask;
-                    // });
-
-                    submitteddata = true;
-
-                    // nextScreen(context, StudentScreen());
-                  },
-                  child: Text("Submit"),
-                ),
-
-                ElevatedButton(
-                  onPressed: () {
-                    if (submitteddata == false) {
-                      final snackBar = SnackBar(
-                        backgroundColor: Colors.red,
-                        duration: Duration(seconds: 1),
-                        dismissDirection: DismissDirection.horizontal,
-                        content: const Text(
-                          'Please Submit this question first',
-                          style: TextStyle(),
-                        ),
-                      );
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                    } else {
-                      setState(() {
-                        contentcontroller.text = "";
-
-                        uploadimage = null;
-                        // question1controller.text = "";
-                        // question1typecontroller.text = "";
-                        // answer1acontroller.text = "";
-                        // answer1bcontroller.text = "";
-                        // answer1ccontroller.text = "";
-                        // answer1dcontroller.text = "";
-                        submitteddata = false;
-                      });
-                    }
-                  },
-                  child: Text("Next post "),
-                ),
-                // ElevatedButton(
-                //     onPressed: () {
-                //       nextScreen(
-                //           context,
-                //           AddQuestionScreen(
-                //             taskid: "widget.taskid",
-                //           ));
-                //     },
-                //     child: Text("add questions "))
-              ],
-            )),
+                }
+              }),
+        ),
       ),
     );
   }
 
-  void submitdata(
+  Future submitdata(
       {required File? filepath,
       required String content,
+      required String avatarimage,
       // required String topic,
       // required String videotitle,
       // required Task taskdata,
@@ -476,14 +895,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
     try {
       FormData formdata = FormData.fromMap({
-        "userId": uid,
+        "userId": globalteacherdata.userDetails[0].lastName,
         "post": await MultipartFile.fromFile(filepath.path, filename: filename),
-        "avatar": "www.avatar.com",
+        "avatar": avatarimage,
         "content": content,
       });
 
       Response response = await Dio().post(
-          "https://easyed-social-media-backend.onrender.com/api/post",
+          "http://ec2-35-154-170-37.ap-south-1.compute.amazonaws.com/api/post",
           data: formdata);
 
       print("File upload response: $response");
@@ -530,5 +949,102 @@ class _AddPostScreenState extends State<AddPostScreen> {
     // } else {
     //   return taskdata;
     // }
+  }
+
+  Future submittextdataonly(
+      {required File? filepath,
+      required String content,
+      required String avatarimage,
+      // required String topic,
+      // required String videotitle,
+      // required Task taskdata,
+      // required DateTime createdOn,
+      // required DateTime updatedOn,
+      // required String id,
+      required String uid}) async {
+    // String filename = basename(filepath!.path);
+
+    // print("file base name ${filename}");
+
+    try {
+      FormData formdata = FormData.fromMap({
+        "userId": globalteacherdata.userDetails[0].lastName,
+        "post": "text",
+        "avatar": avatarimage,
+        "content": content,
+      });
+
+      Response response = await Dio().post(
+          "http://ec2-35-154-170-37.ap-south-1.compute.amazonaws.com/api/post",
+          data: formdata);
+
+      print("File upload response: $response");
+      _showSnackBarMsg(response.data['message']);
+    } catch (e) {
+      print("expectation Caugch: $e");
+    }
+    // List<Common> commonlist = <Common>[
+    //   Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    // ];
+    // String jsonpayload = teacherToJson(teacherdata);
+
+    // print(jsonpayload);
+    // print(Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    //     .toJson()
+    //     .toString());
+    // print("printing respose body part");
+    // print(
+    //   {
+    //     "_id": id,
+    //     "commons": json.encode([
+    //       Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    //           .toJson()
+    //       // "createdOn": "2022-01-01T09:00:00.000Z",
+    //       // "updatedOn": "2022-01-01T09:00:00.000Z"
+    //     ])
+    //   },
+    // );
+
+    // var response = await http.post(
+    //   Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+    //   headers: {'Content-Type': 'application/json'},
+    //   // body: json.encode(sendData),
+    //   body: json.encode(taskdata),
+    // );
+
+    // taskdata = Task.fromJson(json.decode(data));
+
+    // if (response.statusCode == 201) {
+    //   // String responsestring = response.body;
+    //   // teacherFromJson(responsestring);
+
+    //   return taskdata;
+    // } else {
+    //   return taskdata;
+    // }
+  }
+
+  Future<Teacher> getTeacherdata() async {
+    final response = await http.get(Uri.parse(
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}'));
+    // Uri.parse('https://easyed-backend.onrender.com/api/teacher/${uid}'));
+    var data = jsonDecode(response.body.toString());
+
+    // print(data.toString());
+
+    if (response.statusCode == 200) {
+      sampleteachers = Teacher.fromJson(data);
+      // sampleteachers. = dat;
+
+      teacherslist.add(sampleteachers);
+
+      // print(sampleteachers.toString());
+      // for (Map<String, dynamic> index in data) {
+      //   sampleteachers.add(Teacher.fromJson(index));
+      // }
+      return sampleteachers;
+    } else {
+      return sampleteachers;
+    }
   }
 }

@@ -4,6 +4,8 @@ import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/dashboardscreen.dart';
 
 import 'package:sapp/Pages/notificationscreen.dart';
+import 'package:sapp/Pages/postsScreen.dart';
+import 'package:sapp/Pages/showpostscreen.dart';
 import 'package:sapp/Pages/showprofilescreen.dart';
 
 import 'package:sapp/Pages/studentscreen.dart';
@@ -22,10 +24,12 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
 //Screens for each nav items.
   List<Widget> _NavScreens() {
     return [
-      Dashboard(),
+      //  Page3(),
+      ShowPostScreen(),
       // Page1(),
-      NOtificationScreen(),
-      Page3(),
+      Dashboard(),
+      // NOtificationScreen(),
+
       // Page4(),
       ShowProfileScreen(),
     ];
@@ -34,11 +38,12 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: ImageIcon(AssetImage("assets/home.png")),
-        // title: ("Home"),
+        icon: ImageIcon(AssetImage("assets/socialnetwork.png")),
+        // title: ("Help"),
         activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
         inactiveColorPrimary: Colors.black,
       ),
+
       // PersistentBottomNavBarItem(
       //   icon: ImageIcon(AssetImage("assets/home.png")),
       //   // title: ("Home"),
@@ -46,17 +51,18 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
       //   inactiveColorPrimary: Colors.black,
       // ),
       PersistentBottomNavBarItem(
-        icon: ImageIcon(AssetImage("assets/bell.png")),
-        // title: ("OFFERS"),
+        icon: ImageIcon(AssetImage("assets/home.png")),
+        // title: ("Home"),
         activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
         inactiveColorPrimary: Colors.black,
       ),
-      PersistentBottomNavBarItem(
-        icon: ImageIcon(AssetImage("assets/message-square.png")),
-        // title: ("Help"),
-        activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
-        inactiveColorPrimary: Colors.black,
-      ),
+      // PersistentBottomNavBarItem(
+      //   icon: ImageIcon(AssetImage("assets/bell.png")),
+      //   // title: ("OFFERS"),
+      //   activeColorPrimary: Color.fromRGBO(255, 255, 255, 1),
+      //   inactiveColorPrimary: Colors.black,
+      // ),
+
       PersistentBottomNavBarItem(
         icon: ImageIcon(AssetImage("assets/user.png")),
         // title: ("ProfileScreen"),
@@ -68,9 +74,13 @@ class _BottomNavigationwidgetState extends State<BottomNavigationwidget> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceheight = MediaQuery.of(context).size.height;
+    // double appbarheight = 45;
+
+    double devicewidth = MediaQuery.of(context).size.width;
     return Center(
       child: PersistentTabView(
-        navBarHeight: 85,
+        navBarHeight: deviceheight * 0.08,
         context,
         controller: _controller,
         screens: _NavScreens(),

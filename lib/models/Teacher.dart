@@ -231,23 +231,27 @@ class Option {
   String optionNumber;
   String optionText;
   String id;
+  bool? answer;
 
   Option({
     required this.optionNumber,
     required this.optionText,
     required this.id,
+    required this.answer,
   });
 
   factory Option.fromJson(Map<String, dynamic> json) => Option(
         optionNumber: json["optionNumber"],
         optionText: json["optionText"],
         id: json["_id"],
+        answer: json["answer"],
       );
 
   Map<String, dynamic> toJson() => {
         "optionNumber": optionNumber,
         "optionText": optionText,
         "_id": id,
+        "answer": answer,
       };
 }
 

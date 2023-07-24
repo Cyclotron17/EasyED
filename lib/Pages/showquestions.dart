@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/Quiz/home.dart';
 import 'package:sapp/models/Student.dart';
@@ -80,249 +81,411 @@ class _ShowQuestionsState extends State<ShowQuestions> {
       v: 1);
   @override
   Widget build(BuildContext context) {
+    Future onReturn() async => setState(() => gettingtaskdata());
+    Future<void> refreshdata() async {
+      await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ShowQuestions(
+                    taskid: widget.taskid,
+                  ))).then((value) => onReturn());
+    }
+
+    double deviceheight = MediaQuery.of(context).size.height;
+    double appbarheight = 45;
+
+    double devicewidth = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(40.0),
-          child: Column(
-            children: [
-              // Container(
-              //   height: 300,
-              //   child: FutureBuilder(
-              //       future: getStudentdata(),
-              //       builder: (context, snapshot) {
-              //         if (snapshot.hasData) {
-              //           return ListView.builder(
-              //               itemCount: 1,
-              //               itemBuilder: (context, index) {
-              //                 return Container(
-              //                   width: 300,
-              //                   color: Colors.yellow,
-              //                   height: 150,
-              //                   child: Column(
-              //                     crossAxisAlignment: CrossAxisAlignment.start,
-              //                     children: [
-              //                       Text("Student Json"),
-              //                       // SizedBox(
-              //                       //   height: 40,
-              //                       // ),
-              //                       Text("IN USER DETAILS :"),
-              //                       Text(
-              //                           "first Name : ${samplestudents[index].userDetails[index].firstName}"),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Column(
+              children: [
+                Container(
+                  // color: Colors.yellow,
+                  width: devicewidth,
+                  height: deviceheight * 0.1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "QUIZ",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 30),
+                      ),
+                      Text(
+                        "QUESTIONS",
+                        style: TextStyle(
+                            color: Color.fromRGBO(38, 90, 232, 1),
+                            fontWeight: FontWeight.w900,
+                            fontSize: 30),
+                      ),
+                    ],
+                  ),
+                ),
+                // Container(
+                //   height: 300,
+                //   child: FutureBuilder(
+                //       future: getStudentdata(),
+                //       builder: (context, snapshot) {
+                //         if (snapshot.hasData) {
+                //           return ListView.builder(
+                //               itemCount: 1,
+                //               itemBuilder: (context, index) {
+                //                 return Container(
+                //                   width: 300,
+                //                   color: Colors.yellow,
+                //                   height: 150,
+                //                   child: Column(
+                //                     crossAxisAlignment: CrossAxisAlignment.start,
+                //                     children: [
+                //                       Text("Student Json"),
+                //                       // SizedBox(
+                //                       //   height: 40,
+                //                       // ),
+                //                       Text("IN USER DETAILS :"),
+                //                       Text(
+                //                           "first Name : ${samplestudents[index].userDetails[index].firstName}"),
 
-              //                       Text(
-              //                           "avatar url : ${samplestudents[index].userDetails[index].avatar}"),
-              //                       SizedBox(
-              //                         height: 40,
-              //                       ),
-              //                     ],
-              //                   ),
-              //                 );
-              //               });
-              //         } else {
-              //           return Center(
-              //             child: CircularProgressIndicator(),
-              //           );
-              //         }
-              //       }),
-              // ),
-              Text(uid),
+                //                       Text(
+                //                           "avatar url : ${samplestudents[index].userDetails[index].avatar}"),
+                //                       SizedBox(
+                //                         height: 40,
+                //                       ),
+                //                     ],
+                //                   ),
+                //                 );
+                //               });
+                //         } else {
+                //           return Center(
+                //             child: CircularProgressIndicator(),
+                //           );
+                //         }
+                //       }),
+                // ),
+                // Text(uid),
 
-              Container(
-                height: 600,
-                child: FutureBuilder(
-                    future: gettingtaskdata(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                            itemCount: questionslist.length,
-                            itemBuilder: (context, index) {
-                              if (count < questionslist.length) {
-                                count++;
-                                _questions.add({
-                                  'questionText': index.toString() +
-                                      ": " +
-                                      questionslist[index].question,
-                                  'answers': [
-                                    {
-                                      'text': questionslist[index]
-                                          .options[0]
-                                          .optionText,
-                                      'score': 1
-                                    },
-                                    {
-                                      'text': questionslist[index]
-                                          .options[1]
-                                          .optionText,
-                                      'score': 0
-                                    },
-                                    {
-                                      'text': questionslist[index]
-                                          .options[2]
-                                          .optionText,
-                                      'score': 0
-                                    },
-                                    {
-                                      'text': questionslist[index]
-                                          .options[3]
-                                          .optionText,
-                                      'score': 0
-                                    },
-                                  ],
-                                });
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      // color: Colors.red,
+                      border: Border.all(width: 3),
+                    ),
+                    height: deviceheight * 0.65,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          await refreshdata();
+                        },
+                        child: FutureBuilder(
+                            future: gettingtaskdata(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                return ListView.builder(
+                                    itemCount: questionslist.length,
+                                    itemBuilder: (context, index) {
+                                      if (count < questionslist.length) {
+                                        count++;
+                                        _questions.add({
+                                          'questionText': index.toString() +
+                                              ": " +
+                                              questionslist[index].question,
+                                          'answers': [
+                                            {
+                                              'text': questionslist[index]
+                                                  .options[0]
+                                                  .optionText,
+                                              'score': questionslist[index]
+                                                          .options[0]
+                                                          .answer
+                                                          .toString() ==
+                                                      "true"
+                                                  ? 1
+                                                  : 0,
+                                            },
+                                            {
+                                              'text': questionslist[index]
+                                                  .options[1]
+                                                  .optionText,
+                                              'score': questionslist[index]
+                                                          .options[1]
+                                                          .answer
+                                                          .toString() ==
+                                                      "true"
+                                                  ? 1
+                                                  : 0,
+                                            },
+                                            {
+                                              'text': questionslist[index]
+                                                  .options[2]
+                                                  .optionText,
+                                              'score': questionslist[index]
+                                                          .options[2]
+                                                          .answer
+                                                          .toString() ==
+                                                      "true"
+                                                  ? 1
+                                                  : 0,
+                                            },
+                                            {
+                                              'text': questionslist[index]
+                                                  .options[3]
+                                                  .optionText,
+                                              'score': questionslist[index]
+                                                          .options[3]
+                                                          .answer
+                                                          .toString() ==
+                                                      "true"
+                                                  ? 1
+                                                  : 0,
+                                            },
+                                          ],
+                                        });
+                                      }
+                                      print(_questions.length);
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // _questions list that send to quiz
+                                          // Text(_questions[index]['questionText']
+                                          //     .toString()),
+                                          // Text(_questions[index]['answers'][0]['text']),
+                                          // Text(_questions[index]['answers'][1]['text']),
+                                          // Text(_questions[index]['answers'][2]['text']),
+                                          // Text(_questions[index]['answers'][3]['text']),
+
+                                          // Text(_questions.length.toString()),
+                                          // Text("Teacher json"),
+                                          // Text("In tasks "),
+                                          // Text("creator : ${sampletask.creator} "),
+                                          Text(
+                                            index.toString() +
+                                                ": " +
+                                                questionslist[index].question,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w800),
+                                          ),
+
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 12.0,
+                                                top: 8.0,
+                                                bottom: 8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "A: " +
+                                                      questionslist[index]
+                                                          .options[0]
+                                                          .optionText,
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                // Text(questionslist[index]
+                                                //     .options[0]
+                                                //     .answer
+                                                //     .toString()),
+                                                Text(
+                                                  "B: " +
+                                                      questionslist[index]
+                                                          .options[1]
+                                                          .optionText,
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                // Text(questionslist[index]
+                                                //     .options[1]
+                                                //     .answer
+                                                //     .toString()),
+                                                Text(
+                                                  "C: " +
+                                                      questionslist[index]
+                                                          .options[2]
+                                                          .optionText,
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                // Text(questionslist[index]
+                                                //     .options[2]
+                                                //     .answer
+                                                //     .toString()),
+                                                Text(
+                                                  "D: " +
+                                                      questionslist[index]
+                                                          .options[3]
+                                                          .optionText,
+                                                  style: TextStyle(
+                                                      color: Colors.grey,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                                // Text(questionslist[index]
+                                                //     .options[3]
+                                                //     .answer
+                                                //     .toString()),
+                                              ],
+                                            ),
+                                          ),
+
+                                          // Text(sampletask.questions)
+                                          // Text("class : ${taskslist[0].taskClass}"),
+                                          // Text("Subject ${taskslist[0].subject}"),
+
+                                          // SizedBox(
+                                          //   height: 30,
+                                          // )
+
+                                          // Text("Question ${index}" +
+                                          //     ": " +
+                                          //     taskslist[index].questions[0].question),
+                                          // SizedBox(
+                                          //   height: 10,
+                                          // ),
+
+                                          // GestureDetector(
+                                          //   onTap: () {
+                                          //     setState(() {
+                                          //       print(index);
+                                          //       if (index == 0) {
+                                          //         aselectcolor = Colors.blue;
+                                          //       }
+                                          //     });
+                                          //   },
+                                          //   child: Text(
+                                          //     "A" +
+                                          //         ": " +
+                                          //         taskslist[index]
+                                          //             .questions[0]
+                                          //             .options[0]
+                                          //             .optionText,
+                                          //     style: index == 0
+                                          //         ? TextStyle(color: aselectcolor)
+                                          //         : TextStyle(color: Colors.black),
+                                          //   ),
+                                          // ),
+
+                                          // Text("B" +
+                                          //     ": " +
+                                          //     taskslist[index]
+                                          //         .questions[0]
+                                          //         .options[1]
+                                          //         .optionText),
+                                          // Text("C" +
+                                          //     ": " +
+                                          //     taskslist[index]
+                                          //         .questions[0]
+                                          //         .options[2]
+                                          //         .optionText),
+                                          // Text("D" +
+                                          //     ": " +
+                                          //     taskslist[index]
+                                          //         .questions[0]
+                                          //         .options[3]
+                                          //         .optionText),
+
+                                          // Text("In notes"),
+                                          // Text(
+                                          //     "topic : ${sampleteachers.notes[index].topic}"),
+                                          // GestureDetector(
+                                          //   onTap: () async {
+                                          //     final url = sampleteachers
+                                          //         .notes[index].notesPdfLink;
+                                          //     final file =
+                                          //         await PDFApi.loadNetwork(url);
+
+                                          //     openPDF(context, file);
+                                          //   },
+                                          //   child: Container(
+                                          //     color: Colors.pink,
+                                          //     height: 20,
+                                          //     width: 30,
+                                          //     child: Text("pdf"),
+                                          //   ),
+                                          // ),
+                                          // Text(
+                                          //     "notesPDFLink ${sampleteachers.notes[index].notesPdfLink}"),
+                                          // SizedBox(
+                                          //   height: 10,
+                                          // ),
+                                          // Text("In videoLecture"),
+                                          // Text(
+                                          //     "videoTitle : ${sampleteachers.videoLecture[index].videoTitle}"),
+                                          // Text(
+                                          //     "videoLink : ${sampleteachers.videoLecture[index].videoLink} "),
+                                          // VideoPlayerItem(
+                                          //     videoUrl: sampleteachers
+                                          //         .videoLecture[index].videoLink)
+                                        ],
+                                      );
+                                    });
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
                               }
-                              print(_questions.length);
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // _questions list that send to quiz
-                                  // Text(_questions[index]['questionText']
-                                  //     .toString()),
-                                  // Text(_questions[index]['answers'][0]['text']),
-                                  // Text(_questions[index]['answers'][1]['text']),
-                                  // Text(_questions[index]['answers'][2]['text']),
-                                  // Text(_questions[index]['answers'][3]['text']),
+                            }),
+                      ),
+                    ),
+                  ),
+                ),
 
-                                  // Text(_questions.length.toString()),
-                                  // Text("Teacher json"),
-                                  // Text("In tasks "),
-                                  // Text("creator : ${sampletask.creator} "),
-                                  Text(
-                                    index.toString() +
-                                        ": " +
-                                        questionslist[index].question,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800),
-                                  ),
-                                  Text("A: " +
-                                      questionslist[index]
-                                          .options[0]
-                                          .optionText),
-                                  Text("B: " +
-                                      questionslist[index]
-                                          .options[1]
-                                          .optionText),
-                                  Text("C: " +
-                                      questionslist[index]
-                                          .options[2]
-                                          .optionText),
-                                  Text("D: " +
-                                      questionslist[index]
-                                          .options[3]
-                                          .optionText),
-
-                                  // Text(sampletask.questions)
-                                  // Text("class : ${taskslist[0].taskClass}"),
-                                  // Text("Subject ${taskslist[0].subject}"),
-
-                                  // SizedBox(
-                                  //   height: 30,
-                                  // )
-
-                                  // Text("Question ${index}" +
-                                  //     ": " +
-                                  //     taskslist[index].questions[0].question),
-                                  // SizedBox(
-                                  //   height: 10,
-                                  // ),
-
-                                  // GestureDetector(
-                                  //   onTap: () {
-                                  //     setState(() {
-                                  //       print(index);
-                                  //       if (index == 0) {
-                                  //         aselectcolor = Colors.blue;
-                                  //       }
-                                  //     });
-                                  //   },
-                                  //   child: Text(
-                                  //     "A" +
-                                  //         ": " +
-                                  //         taskslist[index]
-                                  //             .questions[0]
-                                  //             .options[0]
-                                  //             .optionText,
-                                  //     style: index == 0
-                                  //         ? TextStyle(color: aselectcolor)
-                                  //         : TextStyle(color: Colors.black),
-                                  //   ),
-                                  // ),
-
-                                  // Text("B" +
-                                  //     ": " +
-                                  //     taskslist[index]
-                                  //         .questions[0]
-                                  //         .options[1]
-                                  //         .optionText),
-                                  // Text("C" +
-                                  //     ": " +
-                                  //     taskslist[index]
-                                  //         .questions[0]
-                                  //         .options[2]
-                                  //         .optionText),
-                                  // Text("D" +
-                                  //     ": " +
-                                  //     taskslist[index]
-                                  //         .questions[0]
-                                  //         .options[3]
-                                  //         .optionText),
-
-                                  // Text("In notes"),
-                                  // Text(
-                                  //     "topic : ${sampleteachers.notes[index].topic}"),
-                                  // GestureDetector(
-                                  //   onTap: () async {
-                                  //     final url = sampleteachers
-                                  //         .notes[index].notesPdfLink;
-                                  //     final file =
-                                  //         await PDFApi.loadNetwork(url);
-
-                                  //     openPDF(context, file);
-                                  //   },
-                                  //   child: Container(
-                                  //     color: Colors.pink,
-                                  //     height: 20,
-                                  //     width: 30,
-                                  //     child: Text("pdf"),
-                                  //   ),
-                                  // ),
-                                  // Text(
-                                  //     "notesPDFLink ${sampleteachers.notes[index].notesPdfLink}"),
-                                  // SizedBox(
-                                  //   height: 10,
-                                  // ),
-                                  // Text("In videoLecture"),
-                                  // Text(
-                                  //     "videoTitle : ${sampleteachers.videoLecture[index].videoTitle}"),
-                                  // Text(
-                                  //     "videoLink : ${sampleteachers.videoLecture[index].videoLink} "),
-                                  // VideoPlayerItem(
-                                  //     videoUrl: sampleteachers
-                                  //         .videoLecture[index].videoLink)
-                                ],
+                Padding(
+                  padding: const EdgeInsets.only(top: 35.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 250,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF265AE8),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30))),
+                            onPressed: () {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: HomeScreen(questions: _questions),
+                                withNavBar:
+                                    true, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.cupertino,
                               );
-                            });
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    }),
-              ),
 
-              ElevatedButton(
-                  onPressed: () {
-                    nextScreen(context, HomeScreen(questions: _questions));
-                  },
-                  child: Text("Quiz")),
+                              // nextScreen(
+                              //     context, HomeScreen(questions: _questions));
+                            },
+                            child: Text(
+                              "Start Quiz",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 16),
+                            )),
+                      ),
+                    ],
+                  ),
+                ),
 
-              // ElevatedButton(
-              //     onPressed: () {
-              //       nextScreen(context, HomeScreen(questions: _questions));
-              //     },
-              //     child: Text("Quiz")),
-            ],
+                // ElevatedButton(
+                //     onPressed: () {
+                //       nextScreen(context, HomeScreen(questions: _questions));
+                //     },
+                //     child: Text("Quiz")),
+              ],
+            ),
           ),
         ),
       ),
@@ -346,7 +509,8 @@ class _ShowQuestionsState extends State<ShowQuestions> {
 
   Future<List<Task>> gettaskdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}/task'));
+    // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task'));
     var data = jsonDecode(response.body.toString());
 
     if (response.statusCode == 200) {
@@ -361,7 +525,8 @@ class _ShowQuestionsState extends State<ShowQuestions> {
 
   Future<List<Question>> gettingtaskdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/${uid}/task/${widget.taskid}'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}/task/${widget.taskid}'));
+    // 'https://easyed-backend.onrender.com/api/teacher/${uid}/task/${widget.taskid}'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
@@ -394,7 +559,8 @@ class _ShowQuestionsState extends State<ShowQuestions> {
 
   Future<Teacher> getTeacherdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/sonamWangchik'));
+    // 'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
@@ -416,10 +582,18 @@ class _ShowQuestionsState extends State<ShowQuestions> {
   }
 
   void openPDF(BuildContext context, File file) {
-    nextScreen(
-        context,
-        PDFViewerPage(
-          file: file,
-        ));
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: PDFViewerPage(
+        file: file,
+      ),
+      withNavBar: true, // OPTIONAL VALUE. True by default.
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+    // nextScreen(
+    //     context,
+    //     PDFViewerPage(
+    //       file: file,
+    //     ));
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/addpostscreen.dart';
 import 'package:sapp/Pages/showpostscreen.dart';
 import 'package:sapp/widgets/widgets.dart';
@@ -22,12 +23,24 @@ class _PostsScreenState extends State<PostsScreen> {
           children: [
             ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, AddPostScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: AddPostScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                  // nextScreen(context, AddPostScreen());
                 },
                 child: Text("Add Post")),
             ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, ShowPostScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: ShowPostScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                  // nextScreen(context, ShowPostScreen());
                 },
                 child: Text("Show Post")),
           ],

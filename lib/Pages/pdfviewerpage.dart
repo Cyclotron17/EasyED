@@ -19,7 +19,10 @@ class _PDFViewerPageState extends State<PDFViewerPage> {
     final name = basename(widget.file.path);
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: Text(
+          "PDF VIEW",
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: PDFView(
         fitEachPage: true,

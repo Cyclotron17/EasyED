@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/pdfviewerpage.dart';
 import 'package:sapp/models/Student.dart';
 import 'package:sapp/models/Teacher.dart';
@@ -171,7 +172,8 @@ class _TestPageState extends State<TestPage> {
 
   Future<Teacher> getTeacherdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/sonamWangchik'));
+    // 'https://easyed-backend.onrender.com/api/teacher/sonamWangchik'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());
@@ -193,10 +195,19 @@ class _TestPageState extends State<TestPage> {
   }
 
   void openPDF(BuildContext context, File file) {
-    nextScreen(
-        context,
-        PDFViewerPage(
-          file: file,
-        ));
+    PersistentNavBarNavigator.pushNewScreen(
+      context,
+      screen: PDFViewerPage(
+        file: file,
+      ),
+      withNavBar: true, // OPTIONAL VALUE. True by default.
+      pageTransitionAnimation: PageTransitionAnimation.cupertino,
+    );
+
+    // nextScreen(
+    //     context,
+    //     PDFViewerPage(
+    //       file: file,
+    //     ));
   }
 }

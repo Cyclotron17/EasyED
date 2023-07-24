@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/addVideoScreen.dart';
 import 'package:sapp/Pages/videoplayerscreen.dart';
 import 'package:sapp/models/Teacher.dart';
@@ -88,6 +89,14 @@ class _LecturesScreenState extends State<LecturesScreen> {
     }
   }
 
+  Future<void> refreshdata() async {
+    await Navigator.push(
+            context, MaterialPageRoute(builder: (context) => LecturesScreen()))
+        .then((value) => onReturn());
+  }
+
+  Future onReturn() async => setState(() => getlecturesdata());
+
   @override
   Widget build(BuildContext context) {
     print(uid);
@@ -114,36 +123,99 @@ class _LecturesScreenState extends State<LecturesScreen> {
               ),
               Container(
                 width: devicewidth,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 29,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _scaffoldKey.currentState?.openDrawer();
-                      },
-                      child: Container(
-                        height: 20,
-                        width: 30,
-                        child: Image.asset("assets/iconmenu.png"),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // SizedBox(
+                      //   width: 29,
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            _scaffoldKey.currentState?.openDrawer();
+                          },
+                          child: Container(
+                            height: 20,
+                            width: 30,
+                            child: Image.asset("assets/iconmenu.png"),
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: devicewidth * 0.7,
-                    ),
-                    PopupMenuButton<String>(
-                      onSelected: handleClick,
-                      itemBuilder: (BuildContext context) {
-                        return {'Option 1', 'Option 2'}.map((String choice) {
-                          return PopupMenuItem<String>(
-                            value: choice,
-                            child: Text(choice),
-                          );
-                        }).toList();
-                      },
-                    ),
-                  ],
+                      Row(
+                        children: [
+                          Text(
+                            "Lecture",
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 23),
+                          ),
+                          Text(
+                            "Notes",
+                            style: TextStyle(
+                                color: Color.fromRGBO(38, 90, 232, 1),
+                                fontWeight: FontWeight.w900,
+                                fontSize: 23),
+                          ),
+                        ],
+                      ),
+
+                      InkWell(
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: Color.fromRGBO(38, 90, 232, 1),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                )),
+                            onPressed: () async {
+                              PersistentNavBarNavigator.pushNewScreen(
+                                context,
+                                screen: AddVideoScreen(),
+                                withNavBar:
+                                    true, // OPTIONAL VALUE. True by default.
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.cupertino,
+                              );
+                              // nextScreen(context, AddVideoScreen());
+                            },
+                            child: Row(
+                              children: [
+                                Text(
+                                  "+ ",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 24,
+                                  ),
+                                ),
+                                Text(
+                                  "Add Lecture",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            )),
+                      ),
+                      // SizedBox(
+                      //   width: devicewidth * 0.7,
+                      // ),
+                      // PopupMenuButton<String>(
+                      //   onSelected: handleClick,
+                      //   itemBuilder: (BuildContext context) {
+                      //     return {'Option 1', 'Option 2'}.map((String choice) {
+                      //       return PopupMenuItem<String>(
+                      //         value: choice,
+                      //         child: Text(choice),
+                      //       );
+                      //     }).toList();
+                      //   },
+                      // ),
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -197,22 +269,27 @@ class _LecturesScreenState extends State<LecturesScreen> {
               Container(
                 height: deviceheight * 0.59,
                 width: devicewidth * 0.95,
-                child: FutureBuilder(
-                    future: getlecturesdata(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: lectureslist.length,
-                          itemBuilder: (context, index) {
-                            return buildlistitem(context, index);
-                          },
-                        );
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    }),
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await refreshdata();
+                  },
+                  child: FutureBuilder(
+                      future: getlecturesdata(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            itemCount: lectureslist.length,
+                            itemBuilder: (context, index) {
+                              return buildlistitem(context, index);
+                            },
+                          );
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }),
+                ),
               )
             ],
           ),
@@ -225,16 +302,24 @@ class _LecturesScreenState extends State<LecturesScreen> {
     double deviceheight = MediaQuery.of(context).size.height;
 
     double devicewidth = MediaQuery.of(context).size.width;
-    videoBoxlist subjectwidget = subjectBoxlist[index];
+    // videoBoxlist subjectwidget = subjectBoxlist[index];
     VideoLecture lecturedata = lectureslist[index];
-
+    final String videourl = lecturedata.videoLink;
     return GestureDetector(
       onTap: () {
         // print(index);
         // if (index == 0) {}
 
         final String videourl = lecturedata.videoLink;
-        nextScreen(context, VideoPlayerScreen(videourl: videourl));
+
+        PersistentNavBarNavigator.pushNewScreen(
+          context,
+          screen: VideoPlayerScreen(videourl: videourl),
+          withNavBar: true, // OPTIONAL VALUE. True by default.
+          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+        );
+
+        // nextScreen(context, VideoPlayerScreen(videourl: videourl));
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -245,69 +330,79 @@ class _LecturesScreenState extends State<LecturesScreen> {
                 bottomLeft: Radius.circular(10),
                 bottomRight: Radius.circular(10)),
           ),
-          height: deviceheight * 0.135,
+          // height: deviceheight * 0.135,
           width: devicewidth * 0.73,
           child: Column(
             children: [
               Row(
                 children: [
                   Container(
-                    height: 108,
-                    width: 130,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          bottomRight: Radius.circular(10)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24.0),
-                      child: Image.asset(
-                        subjectwidget.imageurl!,
-                        fit: BoxFit.cover,
+                      height: 108,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(10),
+                            bottomRight: Radius.circular(10)),
                       ),
-                    ),
-                  ),
+                      child: VideoPlayerItem(videoUrl: videourl)),
                   Padding(
-                    padding: const EdgeInsets.only(left: 22.0),
+                    padding: const EdgeInsets.only(left: 22.0, bottom: 30),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            Container(
-                              height: 12,
-                              width: 12,
-                              child: Image.asset("assets/star.png"),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: Text(
-                                subjectwidget.rating!,
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color.fromRGBO(38, 50, 56, 1)),
-                              ),
-                            ),
+                            // Container(
+                            //   height: 12,
+                            //   width: 12,
+                            //   child: Image.asset("assets/star.png"),
+                            // ),
+                            // Padding(
+                            //   padding: const EdgeInsets.only(left: 8.0),
+                            //   child: Text(
+                            //     subjectwidget.rating!,
+                            //     style: TextStyle(
+                            //         fontSize: 10,
+                            //         fontWeight: FontWeight.w600,
+                            //         color: Color.fromRGBO(38, 50, 56, 1)),
+                            //   ),
+                            // ),
                           ],
                         ),
-                        Text(
-                          subjectwidget.topicname!,
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Color.fromRGBO(38, 50, 56, 1)),
+                        Container(
+                          width: 135,
+                          child: Text(
+                            lecturedata.videoTitle,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Color.fromRGBO(38, 50, 56, 1)),
+                          ),
                         ),
-                        Text(
-                          subjectwidget.mentorname!,
-                          style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromRGBO(117, 124, 142, 1)),
+                        Container(
+                          // color: const Color.fromRGBO(244, 67, 54, 1),
+                          width: 135,
+                          child: Text(
+                            lecturedata.topic,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Color.fromRGBO(117, 124, 142, 1)),
+                          ),
                         ),
+                        // Text(
+                        //   lecturedata.subject,
+                        //   style: TextStyle(
+                        //       fontSize: 12,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color.fromRGBO(117, 124, 142, 1)),
+                        // ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 3.0),
+                          padding: const EdgeInsets.only(top: 6.0),
                           child: Container(
                             decoration: BoxDecoration(
                               color: Color.fromRGBO(175, 179, 193, 1),
@@ -319,12 +414,16 @@ class _LecturesScreenState extends State<LecturesScreen> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(6.0),
-                              child: Text(
-                                subjectwidget.livestatus!,
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color.fromRGBO(255, 255, 255, 1)),
+                              child: Container(
+                                width: 60,
+                                child: Text(
+                                  lecturedata.subject,
+                                  maxLines: 2,
+                                  style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color.fromRGBO(255, 255, 255, 1)),
+                                ),
                               ),
                             ),
                           ),
@@ -343,7 +442,8 @@ class _LecturesScreenState extends State<LecturesScreen> {
 
   Future<List<VideoLecture>> getlecturesdata() async {
     final response = await http.get(Uri.parse(
-        'https://easyed-backend.onrender.com/api/teacher/$uid/lectures'));
+        'http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures'));
+    // 'https://easyed-backend.onrender.com/api/teacher/$uid/lectures'));
     var data = jsonDecode(response.body.toString());
 
     // print(data.toString());

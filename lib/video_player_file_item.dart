@@ -1,20 +1,22 @@
 // import 'package:cached_video_player/cached_video_player.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:chewie/chewie.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPlayerItem extends StatefulWidget {
-  final String videoUrl;
-  const VideoPlayerItem({
+class VideoPlayerFileItem extends StatefulWidget {
+  final File? videofile;
+  const VideoPlayerFileItem({
     Key? key,
-    required this.videoUrl,
+    this.videofile,
   }) : super(key: key);
 
   @override
-  State<VideoPlayerItem> createState() => _VideoPlayerItemState();
+  State<VideoPlayerFileItem> createState() => _VideoPlayerFileItemState();
 }
 
-class _VideoPlayerItemState extends State<VideoPlayerItem> {
+class _VideoPlayerFileItemState extends State<VideoPlayerFileItem> {
   late VideoPlayerController videoPlayerController;
 
   late ChewieController chewieController;
@@ -26,8 +28,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   void initState() {
     super.initState();
 
-    videoPlayerController = VideoPlayerController.network(
-      widget.videoUrl,
+    videoPlayerController = VideoPlayerController.file(
+      widget.videofile!,
     )..initialize().then((value) {
         videoPlayerController.setVolume(1);
       });
@@ -40,7 +42,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
       placeholder: Container(
           color: Colors.black,
           height: 300,
-          width: 600,
+          width: 400,
           child: Center(
               child: CircularProgressIndicator(
             color: Color.fromRGBO(208, 56, 193, 1),
@@ -65,7 +67,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   Widget build(BuildContext context) {
     return Container(
       height: 300,
-      width: 600,
+      width: 400,
       child: Stack(
         children: [
           Chewie(controller: chewieController),

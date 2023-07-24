@@ -1,8 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sapp/Pages/dashboardscreen.dart';
 import 'package:sapp/Pages/editprofilesecreen.dart';
+import 'package:sapp/Pages/globalvariables.dart';
+import 'package:sapp/Pages/notificationscreen.dart';
 import 'package:sapp/Pages/postsScreen.dart';
+import 'package:sapp/Pages/showpostscreen.dart';
+import 'package:sapp/Pages/showprofilescreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/auth/register_page.dart';
 import 'package:sapp/service/auth_service.dart';
@@ -61,29 +66,33 @@ class _MyDrawerState extends State<MyDrawer> {
                         width: 59,
                         // color: Colors.red,
                         child: CircleAvatar(
-                          backgroundImage: AssetImage("assets/Ellipse1.png"),
+                          backgroundImage: NetworkImage(
+                              globalteacherdata.userDetails[0].avatar),
                         ),
                       ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Tushar Singh",
-                          style: TextStyle(
-                              color: Color.fromRGBO(255, 255, 255, 1),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        Text(
-                          "@tushar",
-                          style: TextStyle(
-                              color: Color.fromRGBO(255, 255, 255, 1),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ],
+                    Container(
+                      width: 160,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            globalteacherdata.userDetails[0].firstName,
+                            style: TextStyle(
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
+                          ),
+                          Text(
+                            "@" + globalteacherdata.userDetails[0].lastName,
+                            style: TextStyle(
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -101,47 +110,15 @@ class _MyDrawerState extends State<MyDrawer> {
               onTap: () {
                 PersistentNavBarNavigator.pushNewScreen(
                   context,
-                  screen: EditProfileScreen(),
+                  screen: ShowProfileScreen(),
                   withNavBar: true, // OPTIONAL VALUE. True by default.
                   pageTransitionAnimation: PageTransitionAnimation.cupertino,
                 );
               },
-              leading: Icon(Icons.edit, color: Colors.white),
+              leading: ImageIcon(AssetImage("assets/user.png")),
+              iconColor: Colors.white,
               title: Text(
-                "Edit profile",
-                style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            ListTile(
-              onTap: () {},
-              leading: Icon(CupertinoIcons.share, color: Colors.white),
-              title: Text(
-                "Share the app",
-                style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            ListTile(
-              onTap: () {},
-              leading: Icon(CupertinoIcons.mail_solid, color: Colors.white),
-              title: Text(
-                "Contact us",
-                style: TextStyle(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-            ListTile(
-              onTap: () {},
-              leading: Icon(CupertinoIcons.settings_solid, color: Colors.white),
-              title: Text(
-                "Language",
+                "Profile Details",
                 style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontSize: 15,
@@ -150,18 +127,108 @@ class _MyDrawerState extends State<MyDrawer> {
             ),
             ListTile(
               onTap: () {
-                nextScreen(context, PostsScreen());
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: Dashboard(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
               },
-              leading:
-                  Icon(CupertinoIcons.photo_camera_solid, color: Colors.white),
+              leading: ImageIcon(AssetImage("assets/home.png")),
+              iconColor: Colors.white,
               title: Text(
-                "Posts Screen",
+                "Dashboard",
                 style: TextStyle(
                     color: Color.fromRGBO(255, 255, 255, 1),
                     fontSize: 15,
                     fontWeight: FontWeight.w600),
               ),
             ),
+            // ListTile(
+            //   onTap: () {
+            //     PersistentNavBarNavigator.pushNewScreen(
+            //       context,
+            //       screen: NOtificationScreen(),
+            //       withNavBar: true, // OPTIONAL VALUE. True by default.
+            //       pageTransitionAnimation: PageTransitionAnimation.cupertino,
+            //     );
+            //   },
+            //   leading: ImageIcon(AssetImage("assets/bell.png")),
+            //   iconColor: Colors.white,
+            //   title: Text(
+            //     "Notifications",
+            //     style: TextStyle(
+            //         color: Color.fromRGBO(255, 255, 255, 1),
+            //         fontSize: 15,
+            //         fontWeight: FontWeight.w600),
+            //   ),
+            // ),
+            ListTile(
+              onTap: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: ShowPostScreen(),
+                  withNavBar: true, // OPTIONAL VALUE. True by default.
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                );
+              },
+              leading: ImageIcon(AssetImage("assets/socialnetwork.png")),
+              iconColor: Colors.white,
+              title: Text(
+                "Network",
+                style: TextStyle(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+            // ListTile(
+            //   onTap: () {},
+            //   leading: Icon(CupertinoIcons.share, color: Colors.white),
+            //   title: Text(
+            //     "Share the app",
+            //     style: TextStyle(
+            //         color: Color.fromRGBO(255, 255, 255, 1),
+            //         fontSize: 15,
+            //         fontWeight: FontWeight.w600),
+            //   ),
+            // ),
+            // ListTile(
+            //   onTap: () {},
+            //   leading: Icon(CupertinoIcons.mail_solid, color: Colors.white),
+            //   title: Text(
+            //     "Contact us",
+            //     style: TextStyle(
+            //         color: Color.fromRGBO(255, 255, 255, 1),
+            //         fontSize: 15,
+            //         fontWeight: FontWeight.w600),
+            //   ),
+            // ),
+            // ListTile(
+            //   onTap: () {},
+            //   leading: Icon(CupertinoIcons.settings_solid, color: Colors.white),
+            //   title: Text(
+            //     "Language",
+            //     style: TextStyle(
+            //         color: Color.fromRGBO(255, 255, 255, 1),
+            //         fontSize: 15,
+            //         fontWeight: FontWeight.w600),
+            //   ),
+            // ),
+            // ListTile(
+            //   onTap: () {
+            //     nextScreen(context, PostsScreen());
+            //   },
+            //   leading:
+            //       Icon(CupertinoIcons.photo_camera_solid, color: Colors.white),
+            //   title: Text(
+            //     "Posts Screen",
+            //     style: TextStyle(
+            //         color: Color.fromRGBO(255, 255, 255, 1),
+            //         fontSize: 15,
+            //         fontWeight: FontWeight.w600),
+            //   ),
+            // ),
             ListTile(
               onTap: () async {
                 showDialog(

@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:sapp/Pages/showtaskpage.dart';
 import 'package:sapp/Pages/studentscreen.dart';
 import 'package:sapp/auth/login_page.dart';
 import 'package:sapp/helper/helper_function.dart';
@@ -16,6 +18,7 @@ import 'package:sapp/widgets/widgets.dart';
 
 class AddQuestionScreen extends StatefulWidget {
   final String taskid;
+
   const AddQuestionScreen({super.key, required this.taskid});
 
   @override
@@ -23,7 +26,10 @@ class AddQuestionScreen extends StatefulWidget {
 }
 
 class _AddQuestionScreenState extends State<AddQuestionScreen> {
+  bool isloading = false;
+  final formKey = GlobalKey<FormState>();
   bool submitteddata = false;
+  bool questionsubmitted = false;
 
   Question questiondata1 =
       Question(question: "", questionType: "", options: [], id: "");
@@ -59,6 +65,7 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
   TextEditingController answer1bcontroller = TextEditingController();
   TextEditingController answer1ccontroller = TextEditingController();
   TextEditingController answer1dcontroller = TextEditingController();
+  String? correctanswer;
 
   // TextEditingController mobile = TextEditingController();
   // TextEditingController jobcontroller = TextEditingController();
@@ -85,6 +92,9 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceheight = MediaQuery.of(context).size.height;
+
+    double devicewidth = MediaQuery.of(context).size.width;
     final uid = FirebaseAuth.instance.currentUser!.uid;
     print("uid from AddQuestionScreen  ${uid}");
     AuthService authService = AuthService();
@@ -153,78 +163,161 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                 //           ),
                 //       hintText: "Enter topic name"),
                 // ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: question1controller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
+
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: question1controller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Question"),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Question";
+                            } else {
+                              return null;
+                            }
+                          },
                         ),
-                        hintText: "Enter question 1 "),
+                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: TextFormField(
+                      //     controller: question1typecontroller,
+                      //     decoration: InputDecoration(
+                      //         enabledBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(
+                      //               width: 3, color: Colors.black), //<-- SEE HERE
+                      //         ),
+                      //         hintText: "Enter question 1 type "),
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: answer1acontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Option a "),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Option a";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: answer1bcontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Option b "),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Option a";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: answer1ccontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Option c "),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Option c";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: answer1dcontroller,
+                          decoration: InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 3,
+                                    color: Colors.black), //<-- SEE HERE
+                              ),
+                              hintText: "Enter Option d "),
+                          validator: (val) {
+                            if (val!.length < 1) {
+                              return "Please Enter Option d";
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ),
+
+                      Container(
+                        width: devicewidth * 0.71,
+                        child: DropdownButtonFormField(
+                          // onTap: () {
+                          //   print(correctanswer);
+                          // },
+                          iconEnabledColor: Color.fromRGBO(153, 153, 153, 1),
+                          iconSize: 35,
+                          items: [
+                            DropdownMenuItem(
+                              child: Text('A'),
+                              value: "A",
+                            ),
+                            DropdownMenuItem(
+                              child: Text('B'),
+                              value: "B",
+                            ),
+                            DropdownMenuItem(
+                              child: Text('C'),
+                              value: "C",
+                            ),
+                            DropdownMenuItem(
+                              child: Text('D'),
+                              value: "D",
+                            ),
+                          ],
+                          decoration:
+                              InputDecoration(hintText: "Enter Correct Option"),
+                          onChanged: (val) {
+                            correctanswer = val;
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: question1typecontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter question 1 type "),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: answer1acontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter option a "),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: answer1bcontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter option b "),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: answer1ccontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter option c "),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: answer1dcontroller,
-                    decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                              width: 3, color: Colors.black), //<-- SEE HERE
-                        ),
-                        hintText: "Enter option d "),
-                  ),
-                ),
+
                 SizedBox(
                   height: 20,
                 ),
@@ -243,179 +336,246 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30))),
                   onPressed: () async {
-                    // String id = uid;
-                    // String creatorname = creatorcontroller.text;
-                    // String classnames = classcontroller.text;
-                    // String subjectname = subjectcontroller.text;
-                    // String topicname = topiccontroller.text;
-                    String question1text = question1controller.text;
-                    String question1type = question1typecontroller.text;
-                    String answer1a = answer1acontroller.text;
-                    String answer1b = answer1bcontroller.text;
-                    String answer1c = answer1ccontroller.text;
-                    String answer1d = answer1dcontroller.text;
-
-                    Question questiondata = Question(
-                        question: question1text,
-                        questionType: question1type,
-                        options: [
-                          Option(
-                              optionNumber: "A",
-                              optionText: answer1a,
-                              id: "649ec068b4a2118b5424695d"),
-                          Option(
-                              optionNumber: "B",
-                              optionText: answer1b,
-                              id: "649ec068b4a2118b5424695e"),
-                          Option(
-                              optionNumber: "C",
-                              optionText: answer1c,
-                              id: "649ec068b4a2118b5424695f"),
-                          Option(
-                              optionNumber: "D",
-                              optionText: answer1d,
-                              id: "649ec068b4a2118b54246960"),
-                        ],
-                        id: "649ec068b4a2118b5424695c");
-
-                    // Task taskdata = Task(
-                    //     creator: creatorname,
-                    //     taskClass: classnames,
-                    //     subject: subjectname,
-                    //     topic: topicname,
-                    //     questions: [
-                    //       Question(
-                    //         question: question1text,
-                    //         questionType: question1type,
-                    //         options: [
-                    //           Option(
-                    //               optionNumber: "A",
-                    //               optionText: answer1a,
-                    //               id: "649ec068b4a2118b5424695d"),
-                    //           Option(
-                    //               optionNumber: "B",
-                    //               optionText: answer1b,
-                    //               id: "649ec068b4a2118b5424695e"),
-                    //           Option(
-                    //               optionNumber: "C",
-                    //               optionText: answer1c,
-                    //               id: "649ec068b4a2118b5424695f"),
-                    //           Option(
-                    //               optionNumber: "D",
-                    //               optionText: answer1d,
-                    //               id: "649ec068b4a2118b54246960"),
-                    //         ],
-                    //         id: "649ec068b4a2118b5424695c",
-                    //       )
-                    //     ],
-                    //     id: "649ec068b4a2118b5424695b");
-
-                    // Teacher teacherdata = Teacher(
-                    //     id: uid,
-                    //     commons: [
-                    //       Common(
-                    //         createdOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         updatedOn:
-                    //             DateTime.parse("2023-06-30T09:00:00.000Z"),
-                    //         id: "649ebfb5b4a2118b5424694e",
-                    //       )
-                    //     ],
-                    //     userDetails: [
-                    //       UserDetail(
-                    //           firstName: firstname,
-                    //           lastName: lastname,
-                    //           email: email,
-                    //           mobile: mobile,
-                    //           avatar: "",
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     educationalDetails: [
-                    //       EducationalDetail(
-                    //           instituteName: institutename,
-                    //           educationalDetailClass: classname,
-                    //           id: "649ebfb5b4a2118b5424694e")
-                    //     ],
-                    //     tasks: [],
-                    //     notes: [],
-                    //     videoLecture: [],
-                    //     students: [],
-                    //     v: 91);
-                    ///////String job = jobcontroller.text;
-
-                    // Teacher data = await submitdata(
-                    //   teacherdata: teacherdata,
-                    //   id: id,
-
-                    // Task datatask =
-                    //     await submitdata(taskdata: taskdata, id: id, uid: uid);
-
-                    Question dataquestion =
-                        await submitdata(questiondata: questiondata, uid: uid);
-
-                    ///////// createdOn: DateTime.now(),
-                    ////////// updatedOn: DateTime.now());
-                    // );
-
-                    // await FirebaseFirestore.instance
-                    //     .collection("users")
-                    //     .doc(uid)
-                    //     .update({
-                    //   "filldetails": true,
-                    // });
-
                     setState(() {
-                      questiondata1 = dataquestion;
+                      isloading = true;
                     });
 
-                    submitteddata = true;
+                    if (formKey.currentState!.validate()) {
+                      // String id = uid;
+                      // String creatorname = creatorcontroller.text;
+                      // String classnames = classcontroller.text;
+                      // String subjectname = subjectcontroller.text;
+                      // String topicname = topiccontroller.text;
+                      String question1text = question1controller.text;
+                      String question1type = "Mcq";
+                      String answer1a = answer1acontroller.text;
+                      String answer1b = answer1bcontroller.text;
+                      String answer1c = answer1ccontroller.text;
+                      String answer1d = answer1dcontroller.text;
 
-                    // nextScreen(context, StudentScreen());
+                      Question questiondata = Question(
+                          question: question1text,
+                          questionType: question1type,
+                          options: [
+                            Option(
+                              optionNumber: "A",
+                              optionText: answer1a,
+                              id: "649ec068b4a2118b5424695d",
+                              answer: correctanswer == "A" ? true : false,
+                            ),
+                            Option(
+                              optionNumber: "B",
+                              optionText: answer1b,
+                              id: "649ec068b4a2118b5424695e",
+                              answer: correctanswer == "B" ? true : false,
+                            ),
+                            Option(
+                              optionNumber: "C",
+                              optionText: answer1c,
+                              id: "649ec068b4a2118b5424695f",
+                              answer: correctanswer == "C" ? true : false,
+                            ),
+                            Option(
+                              optionNumber: "D",
+                              optionText: answer1d,
+                              id: "649ec068b4a2118b54246960",
+                              answer: correctanswer == "D" ? true : false,
+                            ),
+                          ],
+                          id: "649ec068b4a2118b5424695c");
+
+                      // Task taskdata = Task(
+                      //     creator: creatorname,
+                      //     taskClass: classnames,
+                      //     subject: subjectname,
+                      //     topic: topicname,
+                      //     questions: [
+                      //       Question(
+                      //         question: question1text,
+                      //         questionType: question1type,
+                      //         options: [
+                      //           Option(
+                      //               optionNumber: "A",
+                      //               optionText: answer1a,
+                      //               id: "649ec068b4a2118b5424695d"),
+                      //           Option(
+                      //               optionNumber: "B",
+                      //               optionText: answer1b,
+                      //               id: "649ec068b4a2118b5424695e"),
+                      //           Option(
+                      //               optionNumber: "C",
+                      //               optionText: answer1c,
+                      //               id: "649ec068b4a2118b5424695f"),
+                      //           Option(
+                      //               optionNumber: "D",
+                      //               optionText: answer1d,
+                      //               id: "649ec068b4a2118b54246960"),
+                      //         ],
+                      //         id: "649ec068b4a2118b5424695c",
+                      //       )
+                      //     ],
+                      //     id: "649ec068b4a2118b5424695b");
+
+                      // Teacher teacherdata = Teacher(
+                      //     id: uid,
+                      //     commons: [
+                      //       Common(
+                      //         createdOn:
+                      //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //         updatedOn:
+                      //             DateTime.parse("2023-06-30T09:00:00.000Z"),
+                      //         id: "649ebfb5b4a2118b5424694e",
+                      //       )
+                      //     ],
+                      //     userDetails: [
+                      //       UserDetail(
+                      //           firstName: firstname,
+                      //           lastName: lastname,
+                      //           email: email,
+                      //           mobile: mobile,
+                      //           avatar: "",
+                      //           id: "649ebfb5b4a2118b5424694e")
+                      //     ],
+                      //     educationalDetails: [
+                      //       EducationalDetail(
+                      //           instituteName: institutename,
+                      //           educationalDetailClass: classname,
+                      //           id: "649ebfb5b4a2118b5424694e")
+                      //     ],
+                      //     tasks: [],
+                      //     notes: [],
+                      //     videoLecture: [],
+                      //     students: [],
+                      //     v: 91);
+                      ///////String job = jobcontroller.text;
+
+                      // Teacher data = await submitdata(
+                      //   teacherdata: teacherdata,
+                      //   id: id,
+
+                      // Task datatask =
+                      //     await submitdata(taskdata: taskdata, id: id, uid: uid);
+
+                      Question dataquestion = await submitdata(
+                          questiondata: questiondata, uid: uid);
+
+                      ///////// createdOn: DateTime.now(),
+                      ////////// updatedOn: DateTime.now());
+                      // );
+
+                      // await FirebaseFirestore.instance
+                      //     .collection("users")
+                      //     .doc(uid)
+                      //     .update({
+                      //   "filldetails": true,
+                      // });
+
+                      setState(() {
+                        questiondata1 = dataquestion;
+                      });
+
+                      setState(() {
+                        // creatorcontroller.text = "";
+                        // classcontroller.text = "";
+                        // subjectcontroller.text = "";
+                        // topiccontroller.text = "";
+                        question1controller.text = "";
+                        question1typecontroller.text = "";
+                        answer1acontroller.text = "";
+                        answer1bcontroller.text = "";
+                        answer1ccontroller.text = "";
+                        answer1dcontroller.text = "";
+                        submitteddata = false;
+                      });
+
+                      submitteddata = true;
+
+                      setState(() {
+                        isloading = false;
+                      });
+
+                      // questionsubmitted = false;
+
+                      // nextScreen(context, StudentScreen());
+                    }
                   },
-                  child: Text(
-                    "Submit",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  child: isloading
+                      ? Container(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                      : Text(
+                          "Confirm Question",
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 50.0),
+                  child: Container(
+                    width: 500,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          primary: Color(0xFF265AE8),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30))),
+                      onPressed: () {
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: ShowTaskPage(),
+                          withNavBar: true, // OPTIONAL VALUE. True by default.
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.cupertino,
+                        );
+
+                        // nextScreen(context, ShowTaskPage());
+                      },
+                      child: Text("DONE",
+                          style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
                   ),
                 ),
 
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: Colors.black,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30))),
-                    onPressed: () {
-                      if (submitteddata == false) {
-                        final snackBar = SnackBar(
-                          backgroundColor: Colors.red,
-                          duration: Duration(seconds: 1),
-                          dismissDirection: DismissDirection.horizontal,
-                          content: const Text(
-                            'Please Submit this question first',
-                            style: TextStyle(),
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                // ElevatedButton(
+                //     style: ElevatedButton.styleFrom(
+                //         primary: Colors.black,
+                //         elevation: 0,
+                //         shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(30))),
+                //     onPressed: () {
+                //       if (submitteddata == false) {
+                //         final snackBar = SnackBar(
+                //           backgroundColor: Colors.red,
+                //           duration: Duration(seconds: 1),
+                //           dismissDirection: DismissDirection.horizontal,
+                //           content: const Text(
+                //             'Please Submit this question first',
+                //             style: TextStyle(),
+                //           ),
+                //         );
+                //         ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      } else {
-                        setState(() {
-                          // creatorcontroller.text = "";
-                          // classcontroller.text = "";
-                          // subjectcontroller.text = "";
-                          // topiccontroller.text = "";
-                          question1controller.text = "";
-                          question1typecontroller.text = "";
-                          answer1acontroller.text = "";
-                          answer1bcontroller.text = "";
-                          answer1ccontroller.text = "";
-                          answer1dcontroller.text = "";
-                          submitteddata = false;
-                        });
-                      }
-                    },
-                    child: Text("Next question ",
-                        style: TextStyle(color: Colors.white, fontSize: 16)))
+                //         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                //       } else {
+                //         setState(() {
+                //           // creatorcontroller.text = "";
+                //           // classcontroller.text = "";
+                //           // subjectcontroller.text = "";
+                //           // topiccontroller.text = "";
+                //           question1controller.text = "";
+                //           question1typecontroller.text = "";
+                //           answer1acontroller.text = "";
+                //           answer1bcontroller.text = "";
+                //           answer1ccontroller.text = "";
+                //           answer1dcontroller.text = "";
+                //           submitteddata = false;
+                //         });
+                //       }
+                //     },
+                //     child: Text("Next question ",
+                //         style: TextStyle(color: Colors.white, fontSize: 16)))
               ],
             )),
       ),
@@ -451,8 +611,10 @@ class _AddQuestionScreenState extends State<AddQuestionScreen> {
     // );
 
     var response = await http.post(
-      Uri.https('easyed-backend.onrender.com',
-          '/api/teacher/${uid}/task/${widget.taskid}/addquestion'),
+      Uri.http('ec2-13-234-152-69.ap-south-1.compute.amazonaws.com',
+          '/api/user/${uid}/task/${widget.taskid}/addquestion'),
+      // Uri.https('easyed-backend.onrender.com',
+      //     '/api/teacher/${uid}/task/${widget.taskid}/addquestion'),
       headers: {'Content-Type': 'application/json'},
       // body: json.encode(sendData),
       body: json.encode(questiondata),

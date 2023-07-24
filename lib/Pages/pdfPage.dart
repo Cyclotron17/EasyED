@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/addpdfscreen.dart';
 import 'package:sapp/Pages/notesscreen.dart';
 import 'package:sapp/widgets/widgets.dart';
@@ -22,13 +23,26 @@ class _PdfPageState extends State<PdfPage> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, AddPdfScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: AddPdfScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+
+                  // nextScreen(context, AddPdfScreen());
                 },
                 child: Text("ADD PDF "),
               ),
               ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, NotesScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: NotesScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                  // nextScreen(context, NotesScreen());
                 },
                 child: Text("Show PDF "),
               ),

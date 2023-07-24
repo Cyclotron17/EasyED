@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:sapp/Pages/addVideoScreen.dart';
 import 'package:sapp/Pages/lecturesscreen.dart';
 import 'package:sapp/widgets/widgets.dart';
@@ -22,12 +23,25 @@ class _LecturePageState extends State<LecturePage> {
           children: [
             ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, AddVideoScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: AddVideoScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+
+                  // nextScreen(context, AddVideoScreen());
                 },
                 child: Text("Add Videos")),
             ElevatedButton(
                 onPressed: () {
-                  nextScreen(context, LecturesScreen());
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: LecturesScreen(),
+                    withNavBar: true, // OPTIONAL VALUE. True by default.
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                  );
+                  // nextScreen(context, LecturesScreen());
                 },
                 child: Text("Show Videos")),
           ],
