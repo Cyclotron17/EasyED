@@ -520,7 +520,7 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
                               //   teacherdata: teacherdata,
                               //   id: id,
 
-                              await submitdata(
+                              await anothermethodsubmitdata(
                                   filepath: uploadvideo,
                                   subjectname: subjectname,
                                   topic: topicname,
@@ -647,19 +647,124 @@ class _AddVideoScreenState extends State<AddVideoScreen> {
       });
 
       Response response = await Dio().post(
-        // "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures",
-        "https://easyed-backend.onrender.com/api/teacher/cmKRXykJf9MyGenjXB2uwsQz5H13/lectures",
+        "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures",
+        // "https://easyed-backend.onrender.com/api/teacher/$uid/lectures",
+        // "https://easyed-backend.onrender.com/api/teacher/cmKRXykJf9MyGenjXB2uwsQz5H13/lectures",
         data: formdata,
-        options: Options(
-          contentType: 'multipart/form-data',
-        ),
+        // options: Options(
+        //   contentType: 'multipart/form-data',
+        //   headers: {
+        //     "Accept": "application/x-www-form-urlencoded",
+        //   },
+        // ),
       );
 
       print("File upload response: $response");
       _showSnackBarMsg(response.data['message']);
     } catch (e) {
-      print("expectation Caugch: $e");
+      print("expectation Caught: ${e}");
     }
+    // List<Common> commonlist = <Common>[
+    //   Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    // ];
+    // String jsonpayload = teacherToJson(teacherdata);
+
+    // print(jsonpayload);
+    // print(Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    //     .toJson()
+    //     .toString());
+    // print("printing respose body part");
+    // print(
+    //   {
+    //     "_id": id,
+    //     "commons": json.encode([
+    //       Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
+    //           .toJson()
+    //       // "createdOn": "2022-01-01T09:00:00.000Z",
+    //       // "updatedOn": "2022-01-01T09:00:00.000Z"
+    //     ])
+    //   },
+    // );
+
+    // var response = await http.post(
+    //   Uri.https('easyed-backend.onrender.com', '/api/teacher/${uid}/task'),
+    //   headers: {'Content-Type': 'application/json'},
+    //   // body: json.encode(sendData),
+    //   body: json.encode(taskdata),
+    // );
+
+    // taskdata = Task.fromJson(json.decode(data));
+
+    // if (response.statusCode == 201) {
+    //   // String responsestring = response.body;
+    //   // teacherFromJson(responsestring);
+
+    //   return taskdata;
+    // } else {
+    //   return taskdata;
+    // }
+  }
+
+  Future anothermethodsubmitdata(
+      {required File? filepath,
+      required String subjectname,
+      required String topic,
+      required String videotitle,
+      // required Task taskdata,
+      // required DateTime createdOn,
+      // required DateTime updatedOn,
+      // required String id,
+      required String uid}) async {
+    String filename = basename(filepath!.path);
+    String url =
+        "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures";
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+
+    request.fields['subject'] = subjectname;
+    request.fields['topic'] = topic;
+    request.fields['videotitle'] = videotitle;
+    request.files.add(
+      await http.MultipartFile.fromPath('video', filepath.path),
+    );
+
+    var response = await request.send();
+
+    print("file base name ${filename}");
+
+    if (response.statusCode == 200) {
+      print('Video data uploaded successfully!');
+    } else {
+      print('Video data upload failed with status: ${response.statusCode}');
+    }
+
+    // try {
+    //   FormData formdata = FormData.fromMap({
+    //     "subject": subjectname,
+    //     "topic": topic,
+    //     "videotitle": videotitle,
+    //     "video":
+    //         await MultipartFile.fromFile(filepath.path, filename: filename),
+    //   });
+
+    //   Response response = await Dio().post(
+    //     "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/$uid/lectures",
+    //     // "https://easyed-backend.onrender.com/api/teacher/$uid/lectures",
+    //     //  "https://easyed-backend.onrender.com/api/teacher/cmKRXykJf9MyGenjXB2uwsQz5H13/lectures",
+    //     data: formdata,
+    //     // options: Options(
+    //     //   contentType: 'multipart/form-data',
+    //     //   headers: {
+    //     //     "Accept": "application/x-www-form-urlencoded",
+    //     //   },
+    //     // ),
+    //   );
+
+    //   print("File upload response: $response");
+    //   _showSnackBarMsg(response.data['message']);
+    // } catch (e) {
+    //   print("expectation Caught: $e");
+    // }
     // List<Common> commonlist = <Common>[
     //   Common(createdOn: DateTime.now(), updatedOn: DateTime.now(), id: id)
     // ];

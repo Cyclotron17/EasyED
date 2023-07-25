@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
@@ -77,6 +78,8 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
       videoLecture: [],
       students: [],
       v: 1);
+
+  StreamController<Post> poststreeamcontroller = StreamController();
 
   @override
   Widget build(BuildContext context) {
@@ -613,12 +616,27 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
                                                               GestureDetector(
                                                                 onTap:
                                                                     () async {
+                                                                  print("length of list before like" +
+                                                                      postlist[
+                                                                              index]
+                                                                          .likes
+                                                                          .length
+                                                                          .toString());
                                                                   await postaddlike(
                                                                       postid:
                                                                           postlist[index]
                                                                               .id,
                                                                       userid:
                                                                           uid);
+
+                                                                  getpostdata();
+
+                                                                  print("length of list after like" +
+                                                                      postlist[
+                                                                              index]
+                                                                          .likes
+                                                                          .length
+                                                                          .toString());
 
                                                                   final snackBar =
                                                                       SnackBar(
@@ -1038,6 +1056,7 @@ class _ShowPostScreenState extends State<ShowPostScreen> {
   //     return samplestudents;
   //   }
   // }
+
   Future<void> refreshdata() async {
     await Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => ShowPostScreen()))

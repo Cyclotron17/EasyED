@@ -831,7 +831,7 @@ class _AddPdfScreenState extends State<AddPdfScreen> {
       });
 
       Response response = await Dio().post(
-          "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/081kWDa7PIR5tPdPtUc3ohvMrZ43/notes",
+          "http://ec2-13-234-152-69.ap-south-1.compute.amazonaws.com/api/user/${uid}/notes",
           // "https://easyed-backend.onrender.com/api/teacher/$uid/notes",
           data: formdata);
 
